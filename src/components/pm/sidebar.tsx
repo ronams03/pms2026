@@ -1,7 +1,9 @@
 'use client'
 
+import { useSession, signOut } from 'next-auth/react'
 import { useAppStore } from '@/lib/store/app-store'
 import { cn } from '@/lib/utils'
+import { colorGradients, getInitials } from '@/lib/pm-helpers'
 import {
   LayoutDashboard,
   FolderKanban,
@@ -11,10 +13,21 @@ import {
   Settings,
   Sparkles,
   ChevronLeft,
+  LogOut,
+  User as UserIcon,
   type LucideIcon,
 } from 'lucide-react'
 import type { PageKey } from '@/lib/types'
 import { motion } from 'framer-motion'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { toast } from 'sonner'
 
 interface NavItem {
   key: PageKey
@@ -34,6 +47,19 @@ const navItems: NavItem[] = [
 
 export function Sidebar() {
   const { currentPage, setPage, sidebarCollapsed, toggleSidebar } = useAppStore()
+  const { data: session } = useSession()
+
+  const userName = session?.user?.name || session?.user?.email?.split('@')[0] || 'User'
+  const userEmail = session?.user?.email || ''
+  const userAvatar = (session?.user as { avatar?: string } | undefined)?.avatar || 'amber'
+  const initials = getInitials(userName)
+  const grad = colorGradients[(userAvatar as keyof typeof colorGradients) || 'amber']
+
+  const handleLogout = async () => {
+    toast.success('Signed out', { description: 'See you soon!' })
+    await signOut({ redirect: false })
+    setTimeout(() => window.location.reload(), 400)
+  }
 
   return (
     <>
@@ -129,21 +155,42 @@ export function Sidebar() {
 
           {/* User */}
           <div className="px-3 pb-4 shrink-0">
-            <button
-              onClick={() => setPage('settings')}
-              className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-colors"
-            >
-              <div className="relative">
-                <div className="h-9 w-9 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-xs font-bold text-background shadow-3d">
-                  AM
-                </div>
-                <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-400 border-2 border-sidebar" />
-              </div>
-              <div className="flex-1 text-left min-w-0">
-                <p className="text-sm font-medium truncate">Alex Morgan</p>
-                <p className="text-[10px] text-muted-foreground truncate">Product Lead</p>
-              </div>
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-colors">
+                  <div className="relative shrink-0">
+                    <div className={`h-9 w-9 rounded-full bg-gradient-to-br ${grad.bg} flex items-center justify-center text-xs font-bold text-background shadow-3d`}>
+                      {initials}
+                    </div>
+                    <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-400 border-2 border-sidebar" />
+                  </div>
+                  <div className="flex-1 text-left min-w-0">
+                    <p className="text-sm font-medium truncate">{userName}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">{userEmail}</p>
+                  </div>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" side="top" className="w-60 glass-strong border-white/10">
+                <DropdownMenuLabel className="text-xs text-muted-foreground">
+                  <p className="font-medium text-foreground truncate">{userName}</p>
+                  <p className="truncate font-normal">{userEmail}</p>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-white/5" />
+                <DropdownMenuItem
+                  onClick={() => setPage('settings')}
+                  className="cursor-pointer focus:bg-white/5"
+                >
+                  <UserIcon className="h-3.5 w-3.5" /> Profile & Settings
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-white/5" />
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="cursor-pointer focus:bg-rose-500/10 text-rose-400"
+                >
+                  <LogOut className="h-3.5 w-3.5" /> Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </aside>

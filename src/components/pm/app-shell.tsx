@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { useAppStore } from '@/lib/store/app-store'
 import { Sidebar } from '@/components/pm/sidebar'
 import { Topbar } from '@/components/pm/topbar'
@@ -11,16 +12,19 @@ import { TeamPage } from '@/components/pm/pages/team'
 import { CalendarPage } from '@/components/pm/pages/calendar'
 import { SettingsPage } from '@/components/pm/pages/settings'
 import { CommandPalette } from '@/components/pm/command-palette'
+import { AuthScreen } from '@/components/pm/auth-screen'
 import { toast } from 'sonner'
-import { Activity as ActivityIcon } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
 
 export function AppShell() {
+  const { data: session, status } = useSession()
   const { currentPage, commandOpen, setCommandOpen } = useAppStore()
   const [seeding, setSeeding] = useState(false)
 
-  // Seed on first mount if empty
+  // Seed on first mount if empty (only when authenticated)
   useEffect(() => {
-    (async () => {
+    if (status !== 'authenticated') return
+    ;(async () => {
       try {
         const res = await fetch('/api/projects')
         const data = await res.json()
@@ -28,7 +32,7 @@ export function AppShell() {
           setSeeding(true)
           const seedRes = await fetch('/api/seed', { method: 'POST' })
           if (seedRes.ok) {
-            toast.success('Welcome to Nexus — demo data loaded', {
+            toast.success('Welcome — demo data loaded', {
               description: 'Explore the cinematic dashboard, projects, and Kanban board.',
             })
           }
@@ -39,7 +43,7 @@ export function AppShell() {
         setSeeding(false)
       }
     })()
-  }, [])
+  }, [status])
 
   // Keyboard shortcut for command palette
   useEffect(() => {
@@ -52,6 +56,31 @@ export function AppShell() {
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [commandOpen, setCommandOpen])
+
+  // Loading state while checking session
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-cinematic flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-orange-600 blur-md opacity-60 animate-pulse" />
+            <div className="relative h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-3d-amber">
+              <Sparkles className="h-7 w-7 text-background" strokeWidth={2.5} />
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="h-4 w-4 rounded-full border-2 border-amber-400/30 border-t-amber-400 animate-spin" />
+            <p className="text-sm text-muted-foreground">Loading workspace…</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Not authenticated → show auth screen
+  if (status === 'unauthenticated' || !session) {
+    return <AuthScreen />
+  }
 
   return (
     <div className="relative min-h-screen bg-cinematic flex">

@@ -121,3 +121,31 @@ Work Log:
 Stage Summary:
 - Sidebar is now cleaner: navigation → user profile (no upgrade card in between)
 - No "Pro Plan" or "Upgrade" text anywhere in the app
+
+---
+Task ID: 4
+Agent: main
+Task: Add functional register and login
+
+Work Log:
+- Installed bcryptjs + @types/bcryptjs for password hashing
+- Added NEXTAUTH_SECRET and NEXTAUTH_URL to .env
+- Extended Prisma schema: added password+avatar fields to User model, added Account/Session/VerificationToken models for NextAuth adapter
+- Ran db:push to sync schema
+- Created src/lib/auth.ts with NextAuth config: CredentialsProvider, bcrypt.compare validation, JWT session strategy, custom callbacks to attach user id + avatar to token/session
+- Created /api/auth/[...nextauth]/route.ts handler
+- Created /api/auth/register/route.ts: validates email/password length, checks for duplicates, hashes password with bcrypt (12 rounds), creates user
+- Added NextAuth type augmentation (src/types/next-auth.d.ts) for session.user.id + avatar
+- Created Providers component wrapping SessionProvider, added to root layout
+- Built cinematic AuthScreen: split layout (branding showcase on left, form card on right), Sign In / Create Account tab switcher, animated mode transitions, password show/hide toggle, feature highlights, mobile-responsive
+- Updated AppShell: useSession() gating — shows loading spinner while checking, AuthScreen when unauthenticated, full workspace when authenticated
+- Updated Sidebar: uses real session user (name, email, avatar from DB), user menu dropdown with "Profile & Settings" + "Sign Out", signOut() with page reload
+- Verified full flow with Agent Browser: register creates account (Sarah Connor / sarah@nexus.io), redirects to dashboard, sidebar shows real user; logout returns to login; login with correct creds works; login with wrong password stays on login screen; duplicate registration rejected with error
+- Lint: passed clean. No console/runtime errors.
+
+Stage Summary:
+- Full functional auth: register + login + logout, all wired to real DB with bcrypt-hashed passwords
+- NextAuth v4 Credentials provider with JWT sessions (30-day expiry)
+- Cinematic auth screen matches app design language (glassmorphism, amber gradients, ambient blobs)
+- App is now gated — unauthenticated users see login, authenticated see workspace
+- Sidebar user section shows the real logged-in user with logout option
