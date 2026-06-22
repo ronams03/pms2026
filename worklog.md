@@ -83,3 +83,26 @@ Stage Summary:
 - Design: dark cinematic theme with amber/gold + emerald/rose/violet/cyan accents, glassmorphism panels, 3D depth shadows, film grain overlay, ambient gradient blobs
 - Data: 8 members, 6 projects, 16 tasks, 6 activities, 7 events seeded
 - Features: sidebar nav, command palette (Ctrl+K), Kanban drag-drop, CRUD for all entities, charts, calendar, responsive mobile layout
+
+---
+Task ID: 2
+Agent: main
+Task: Rebrand to "PROJECT MANAGEMENT SYSTEM", add list views as default to all list pages, remove card edge colors, remove floating Next.js N
+
+Work Log:
+- Set `devIndicators: false` in next.config.ts to remove the floating Next.js N logo
+- Updated sidebar branding: "Nexus" → "PROJECT MANAGEMENT", "Project Studio" → "SYSTEM" (with adjusted typography/tracking)
+- Updated layout.tsx metadata title to "Project Management System"
+- Projects page: changed default view from 'grid' to 'list'; removed the top gradient accent bar (edge color) from project cards
+- Team page: added List/Grid view toggle (List default); built full list-table layout with columns (Member, Department, Status, Email, Actions); removed corner glow blob edge color from grid cards
+- Tasks page: added List/Board view toggle (List default); built full list-table layout with columns (Task, Status, Priority, Assignee, Project, Actions) including inline status-change dropdown and status filter; removed the left priority accent bar (edge color) from Kanban cards
+- Restarted dev server to apply next.config.ts change
+- Verified with Agent Browser: title shows "Project Management System", sidebar shows "PROJECT MANAGEMENT / SYSTEM", no Next.js dev indicator, Projects/Team/Tasks all default to list view, grid/board toggles work, inline task status change persists to DB
+- Lint: passed clean. Console: zero errors.
+
+Stage Summary:
+- Branding fully updated to "PROJECT MANAGEMENT SYSTEM" across sidebar + browser tab title
+- Floating Next.js N dev indicator removed via devIndicators config
+- All 3 list pages (Projects, Tasks, Team) now default to list view with card/board as optional toggle
+- All card edge colors removed (project top bar, task left bar, team corner glow blob)
+- List views include functional features: inline status dropdowns on Tasks, status filter, all existing CRUD actions preserved via dropdown menus

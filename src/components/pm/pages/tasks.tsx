@@ -37,6 +37,8 @@ import {
   Paperclip,
   CheckCircle2,
   Sparkles,
+  List,
+  LayoutGrid,
 } from 'lucide-react'
 import type { Task, TaskStatus, Project, TeamMember } from '@/lib/types'
 import { priorityConfig, colorGradients, getInitials, formatDate, daysUntil } from '@/lib/pm-helpers'
@@ -85,9 +87,6 @@ function DraggableTaskCard({ task, onEdit, onDelete, isOverlay }: DraggableTaskC
           isOverlay && 'shadow-3d-lg rotate-2 scale-105 border-amber-500/40',
         )}
       >
-        {/* priority accent bar */}
-        <div className={cn('absolute left-0 top-0 bottom-0 w-1', priorityConfig[task.priority].bar)} />
-
         <div className="flex items-start justify-between mb-2">
           <Badge variant="outline" className={`text-[9px] ${priorityConfig[task.priority].className}`}>
             <Flag className="h-2.5 w-2.5 mr-1" />{priorityConfig[task.priority].label}
@@ -253,6 +252,8 @@ export function TasksPage() {
   const [editing, setEditing] = useState<Task | null>(null)
   const [defaultStatus, setDefaultStatus] = useState<TaskStatus>('backlog')
   const [projectFilter, setProjectFilter] = useState<string>('all')
+  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [view, setView] = useState<'list' | 'board'>('list')
   const [activeId, setActiveId] = useState<string | null>(null)
 
   const sensors = useSensors(
@@ -337,8 +338,30 @@ export function TasksPage() {
     setModalOpen(true)
   }
 
-  const filtered = projectFilter === 'all' ? tasks : tasks.filter((t) => t.projectId === projectFilter)
+  const filtered = tasks.filter((t) => {
+    const matchesProject = projectFilter === 'all' || t.projectId === projectFilter
+    const matchesStatus = statusFilter === 'all' || t.status === statusFilter
+    return matchesProject && matchesStatus
+  })
   const activeTask = activeId ? tasks.find((t) => t.id === activeId) : null
+
+  const projectName = (id: string | null) => projects.find((p) => p.id === id)?.name || '—'
+
+  const handleStatusChange = async (taskId: string, newStatus: TaskStatus) => {
+    const task = tasks.find((t) => t.id === taskId)
+    if (!task || task.status === newStatus) return
+    setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t)))
+    try {
+      await fetch(`/api/tasks/${taskId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      })
+    } catch {
+      setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, status: task.status } : t)))
+      toast.error('Failed to update status')
+    }
+  }
 
   if (loading) {
     return (
@@ -361,13 +384,13 @@ export function TasksPage() {
             <KanbanSquare className="h-4 w-4 text-background" strokeWidth={2.3} />
           </div>
           <div>
-            <h2 className="font-semibold leading-tight">Kanban Board</h2>
-            <p className="text-xs text-muted-foreground">{filtered.length} tasks · drag to move</p>
+            <h2 className="font-semibold leading-tight">Tasks</h2>
+            <p className="text-xs text-muted-foreground">{filtered.length} tasks · {view === 'board' ? 'drag to move' : 'list view'}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Select value={projectFilter} onValueChange={setProjectFilter}>
-            <SelectTrigger className="w-48 bg-white/5 border-white/10">
+            <SelectTrigger className="w-40 bg-white/5 border-white/10">
               <SelectValue placeholder="All projects" />
             </SelectTrigger>
             <SelectContent className="glass-strong border-white/10">
@@ -377,6 +400,36 @@ export function TasksPage() {
               ))}
             </SelectContent>
           </Select>
+          {view === 'list' && (
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-36 bg-white/5 border-white/10">
+                <SelectValue placeholder="All status" />
+              </SelectTrigger>
+              <SelectContent className="glass-strong border-white/10">
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="backlog">Backlog</SelectItem>
+                <SelectItem value="in_progress">In Progress</SelectItem>
+                <SelectItem value="review">In Review</SelectItem>
+                <SelectItem value="done">Done</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+          <div className="flex rounded-xl bg-white/5 border border-white/10 p-0.5">
+            <button
+              onClick={() => setView('list')}
+              className={cn('p-2 rounded-lg transition-colors', view === 'list' ? 'bg-white/10 text-emerald-400' : 'text-muted-foreground')}
+              aria-label="List view"
+            >
+              <List className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setView('board')}
+              className={cn('p-2 rounded-lg transition-colors', view === 'board' ? 'bg-white/10 text-emerald-400' : 'text-muted-foreground')}
+              aria-label="Board view"
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </button>
+          </div>
           <Button
             onClick={() => handleAddTask('backlog')}
             className="bg-gradient-to-r from-emerald-500 to-teal-600 text-background hover:shadow-[0_0_24px_-4px_rgba(16,185,129,0.6)] font-semibold"
@@ -387,31 +440,150 @@ export function TasksPage() {
         </div>
       </div>
 
-      {/* Board */}
-      <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-          {columns.map((col) => (
-            <DroppableColumn
-              key={col.key}
-              status={col.key}
-              label={col.label}
-              accent={col.accent}
-              dot={col.dot}
-              gradient={col.gradient}
-              tasks={filtered.filter((t) => t.status === col.key)}
-              onAddTask={handleAddTask}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
+      {/* List view */}
+      {view === 'list' ? (
+        <Card className="glass border-white/5 overflow-hidden">
+          <div className="hidden md:grid grid-cols-12 gap-3 px-4 py-3 border-b border-white/5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+            <div className="col-span-4">Task</div>
+            <div className="col-span-2">Status</div>
+            <div className="col-span-1">Priority</div>
+            <div className="col-span-2">Assignee</div>
+            <div className="col-span-2">Project</div>
+            <div className="col-span-1 text-right">Actions</div>
+          </div>
+          <div className="divide-y divide-white/5 max-h-[70vh] overflow-y-auto scrollbar-cinematic">
+            {filtered.length === 0 ? (
+              <div className="px-4 py-12 text-center text-sm text-muted-foreground">
+                No tasks found. Adjust filters or create a new task.
+              </div>
+            ) : filtered.map((task, i) => {
+              const days = daysUntil(task.dueDate)
+              const tags = task.tags ? task.tags.split(',').filter(Boolean) : []
+              return (
+                <motion.div
+                  key={task.id}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25, delay: i * 0.02 }}
+                  className="group grid grid-cols-12 gap-3 px-4 py-3 items-center hover:bg-white/3 transition-colors"
+                >
+                  <div className="col-span-12 md:col-span-4 min-w-0">
+                    <p className="text-sm font-medium truncate">{task.title}</p>
+                    {task.description && (
+                      <p className="text-[11px] text-muted-foreground truncate">{task.description}</p>
+                    )}
+                    <div className="flex items-center gap-2 mt-1">
+                      {task.dueDate && (
+                        <span className={cn(
+                          'flex items-center gap-1 text-[10px]',
+                          task.status === 'done' ? 'text-emerald-400' : days !== null && days < 0 ? 'text-rose-400' : days !== null && days < 3 ? 'text-amber-400' : 'text-muted-foreground',
+                        )}>
+                          <Calendar className="h-2.5 w-2.5" />{formatDate(task.dueDate)}
+                        </span>
+                      )}
+                      {tags.slice(0, 2).map((t) => (
+                        <span key={t} className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-muted-foreground border border-white/5">
+                          #{t.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="col-span-6 md:col-span-2 hidden md:block">
+                    <Select
+                      value={task.status}
+                      onValueChange={(v) => handleStatusChange(task.id, v as TaskStatus)}
+                    >
+                      <SelectTrigger className="h-7 text-[11px] bg-white/5 border-white/10 capitalize py-0">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="glass-strong border-white/10">
+                        {columns.map((c) => (
+                          <SelectItem key={c.key} value={c.key} className="capitalize text-xs">{c.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="col-span-6 md:col-span-1 hidden md:block">
+                    <Badge variant="outline" className={`text-[9px] ${priorityConfig[task.priority].className}`}>
+                      <Flag className="h-2.5 w-2.5 mr-1" />{priorityConfig[task.priority].label}
+                    </Badge>
+                  </div>
+                  <div className="col-span-6 md:col-span-2 hidden md:block min-w-0">
+                    {task.assigneeName ? (
+                      <div className="flex items-center gap-1.5">
+                        <div className={cn(
+                          'h-6 w-6 rounded-full bg-gradient-to-br flex items-center justify-center text-[9px] font-bold text-background shrink-0',
+                          colorGradients[(task.assigneeAvatar as keyof typeof colorGradients) || 'amber'].bg,
+                        )}>
+                          {getInitials(task.assigneeName)}
+                        </div>
+                        <span className="text-xs truncate">{task.assigneeName}</span>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">Unassigned</span>
+                    )}
+                  </div>
+                  <div className="col-span-6 md:col-span-2 hidden md:block min-w-0">
+                    <span className="text-xs text-muted-foreground truncate block">{projectName(task.projectId)}</span>
+                  </div>
+                  <div className="col-span-12 md:col-span-1 flex justify-end">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="p-1.5 rounded-lg hover:bg-white/10 text-muted-foreground">
+                          <MoreVertical className="h-4 w-4" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="glass-strong border-white/10">
+                        <DropdownMenuItem onClick={() => handleEdit(task)} className="cursor-pointer focus:bg-white/5">
+                          <Pencil className="h-3.5 w-3.5" /> Edit
+                        </DropdownMenuItem>
+                        {task.status !== 'done' && (
+                          <DropdownMenuItem onClick={() => handleStatusChange(task.id, 'done')} className="cursor-pointer focus:bg-white/5">
+                            <CheckCircle2 className="h-3.5 w-3.5" /> Mark Done
+                          </DropdownMenuItem>
+                        )}
+                        <DropdownMenuSeparator className="bg-white/5" />
+                        <DropdownMenuItem
+                          onClick={() => handleDelete(task.id)}
+                          className="cursor-pointer focus:bg-rose-500/10 text-rose-400"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" /> Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+        </Card>
+      ) : (
+        /* Board view */
+        <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            {columns.map((col) => (
+              <DroppableColumn
+                key={col.key}
+                status={col.key}
+                label={col.label}
+                accent={col.accent}
+                dot={col.dot}
+                gradient={col.gradient}
+                tasks={tasks.filter((t) => t.status === col.key && (projectFilter === 'all' || t.projectId === projectFilter))}
+                onAddTask={handleAddTask}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
 
-        <DragOverlay>
-          {activeTask ? (
-            <DraggableTaskCard task={activeTask} onEdit={() => {}} onDelete={() => {}} isOverlay />
-          ) : null}
-        </DragOverlay>
-      </DndContext>
+          <DragOverlay>
+            {activeTask ? (
+              <DraggableTaskCard task={activeTask} onEdit={() => {}} onDelete={() => {}} isOverlay />
+            ) : null}
+          </DragOverlay>
+        </DndContext>
+      )}
 
       <CreateTaskModal
         open={modalOpen}

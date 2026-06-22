@@ -60,7 +60,7 @@ type FilterStatus = 'all' | 'planning' | 'active' | 'on_hold' | 'completed'
 export function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
-  const [view, setView] = useState<ViewMode>('grid')
+  const [view, setView] = useState<ViewMode>('list')
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('all')
   const [modalOpen, setModalOpen] = useState(false)
@@ -227,9 +227,6 @@ export function ProjectsPage() {
                 transition={{ duration: 0.4, delay: i * 0.04 }}
               >
                 <Card className="group relative overflow-hidden glass border-white/5 card-3d hover:shadow-3d-lg h-full flex flex-col">
-                  {/* Color top accent */}
-                  <div className={`h-1.5 bg-gradient-to-r ${grad.bg}`} />
-
                   <div className="p-5 flex-1 flex flex-col">
                     <div className="flex items-start justify-between mb-3">
                       <div className={`h-11 w-11 rounded-xl bg-gradient-to-br ${grad.bg} flex items-center justify-center shadow-3d ${grad.glow}`}>

@@ -18,6 +18,8 @@ import {
   CheckCircle2,
   Clock,
   Sparkles,
+  LayoutGrid,
+  List,
 } from 'lucide-react'
 import type { TeamMember } from '@/lib/types'
 import { colorGradients, memberStatusConfig, getInitials } from '@/lib/pm-helpers'
@@ -43,10 +45,13 @@ import { toast } from 'sonner'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
+type ViewMode = 'list' | 'grid'
+
 export function TeamPage() {
   const [members, setMembers] = useState<TeamMember[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [view, setView] = useState<ViewMode>('list')
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState<TeamMember | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
@@ -122,6 +127,22 @@ export function TeamPage() {
               className="pl-9 bg-white/5 border-white/10"
             />
           </div>
+          <div className="flex rounded-xl bg-white/5 border border-white/10 p-0.5">
+            <button
+              onClick={() => setView('list')}
+              className={cn('p-2 rounded-lg transition-colors', view === 'list' ? 'bg-white/10 text-violet-400' : 'text-muted-foreground')}
+              aria-label="List view"
+            >
+              <List className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setView('grid')}
+              className={cn('p-2 rounded-lg transition-colors', view === 'grid' ? 'bg-white/10 text-violet-400' : 'text-muted-foreground')}
+              aria-label="Grid view"
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </button>
+          </div>
           <Button
             onClick={() => { setEditing(null); setModalOpen(true) }}
             className="bg-gradient-to-r from-violet-500 to-purple-600 text-background hover:shadow-[0_0_24px_-4px_rgba(139,92,246,0.6)] font-semibold"
@@ -156,7 +177,7 @@ export function TeamPage() {
         })}
       </div>
 
-      {/* Members grid */}
+      {/* Members list/grid */}
       {filtered.length === 0 ? (
         <Card className="glass border-white/5 p-12 text-center">
           <div className="mx-auto h-16 w-16 rounded-2xl bg-gradient-to-br from-violet-500/20 to-purple-600/20 flex items-center justify-center mb-4">
@@ -173,6 +194,86 @@ export function TeamPage() {
             <Plus className="h-4 w-4" /> Add Member
           </Button>
         </Card>
+      ) : view === 'list' ? (
+        <Card className="glass border-white/5 overflow-hidden">
+          {/* Table header */}
+          <div className="hidden md:grid grid-cols-12 gap-3 px-4 py-3 border-b border-white/5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+            <div className="col-span-4">Member</div>
+            <div className="col-span-2">Department</div>
+            <div className="col-span-2">Status</div>
+            <div className="col-span-3">Email</div>
+            <div className="col-span-1 text-right">Actions</div>
+          </div>
+          <div className="divide-y divide-white/5">
+            {filtered.map((m, i) => {
+              const grad = colorGradients[(m.avatar as keyof typeof colorGradients) || 'amber']
+              const status = memberStatusConfig[m.status]
+              return (
+                <motion.div
+                  key={m.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: i * 0.03 }}
+                  className="group grid grid-cols-12 gap-3 px-4 py-3 items-center hover:bg-white/3 transition-colors"
+                >
+                  <div className="col-span-12 md:col-span-4 flex items-center gap-3 min-w-0">
+                    <div className="relative shrink-0">
+                      <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${grad.bg} flex items-center justify-center text-xs font-bold text-background shadow-3d`}>
+                        {getInitials(m.name)}
+                      </div>
+                      <div className={cn('absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card', status.dot)} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">{m.name}</p>
+                      <p className="text-[11px] text-muted-foreground truncate">{m.role}</p>
+                    </div>
+                  </div>
+                  <div className="col-span-6 md:col-span-2 hidden md:block">
+                    <Badge variant="outline" className="text-[10px] bg-white/5 border-white/10">
+                      <Briefcase className="h-2.5 w-2.5 mr-1" />{m.department}
+                    </Badge>
+                  </div>
+                  <div className="col-span-6 md:col-span-2 hidden md:block">
+                    <Badge variant="outline" className={cn('text-[10px]', status.className, 'border-current/20')}>
+                      <span className={cn('h-1.5 w-1.5 rounded-full mr-1', status.dot)} />
+                      {status.label}
+                    </Badge>
+                  </div>
+                  <div className="col-span-12 md:col-span-3 hidden md:block min-w-0">
+                    <a
+                      href={`mailto:${m.email}`}
+                      className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <Mail className="h-3 w-3 shrink-0" />
+                      <span className="truncate">{m.email}</span>
+                    </a>
+                  </div>
+                  <div className="col-span-12 md:col-span-1 flex justify-end">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="p-1.5 rounded-lg hover:bg-white/10 text-muted-foreground">
+                          <MoreVertical className="h-4 w-4" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="glass-strong border-white/10">
+                        <DropdownMenuItem onClick={() => { setEditing(m); setModalOpen(true) }} className="cursor-pointer focus:bg-white/5">
+                          <Pencil className="h-3.5 w-3.5" /> Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator className="bg-white/5" />
+                        <DropdownMenuItem
+                          onClick={() => setDeleteId(m.id)}
+                          className="cursor-pointer focus:bg-rose-500/10 text-rose-400"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" /> Remove
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+        </Card>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((m, i) => {
@@ -186,12 +287,10 @@ export function TeamPage() {
                 transition={{ duration: 0.4, delay: i * 0.04 }}
               >
                 <Card className="group relative overflow-hidden glass border-white/5 card-3d hover:shadow-3d-lg p-5">
-                  <div className={`absolute -top-10 -right-10 h-28 w-28 rounded-full bg-gradient-to-br ${grad.bg} opacity-15 blur-2xl`} />
-
                   <div className="relative">
                     <div className="flex items-start justify-between mb-4">
                       <div className="relative">
-                        <div className={`h-14 w-14 rounded-2xl bg-gradient-to-br ${grad.bg} flex items-center justify-center text-lg font-bold text-background shadow-3d ${grad.glow}`}>
+                        <div className={`h-14 w-14 rounded-2xl bg-gradient-to-br ${grad.bg} flex items-center justify-center text-lg font-bold text-background shadow-3d`}>
                           {getInitials(m.name)}
                         </div>
                         <div className={cn('absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-card', status.dot)} />

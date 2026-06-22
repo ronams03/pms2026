@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nexus — Cinematic Project Management",
+  title: "Project Management System",
   description: "A modern, cinematic project management system with 3D realistic UI, Kanban boards, dashboards, and team collaboration.",
   keywords: ["project management", "kanban", "dashboard", "team", "cinematic", "3D"],
   authors: [{ name: "Nexus Team" }],

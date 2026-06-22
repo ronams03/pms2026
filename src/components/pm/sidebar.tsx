@@ -57,15 +57,15 @@ export function Sidebar() {
         <div className={cn('flex flex-col h-full', sidebarCollapsed && 'lg:hidden')}>
           {/* Logo */}
           <div className="flex items-center gap-3 px-6 h-20 border-b border-white/5 shrink-0">
-            <div className="relative">
+            <div className="relative shrink-0">
               <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-orange-600 blur-md opacity-60" />
               <div className="relative h-10 w-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-3d-amber">
                 <Sparkles className="h-5 w-5 text-background" strokeWidth={2.5} />
               </div>
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-lg font-bold tracking-tight text-gradient-amber">Nexus</h1>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Project Studio</p>
+              <h1 className="text-sm font-bold tracking-tight text-gradient-amber leading-tight">PROJECT MANAGEMENT</h1>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em]">SYSTEM</p>
             </div>
             <button
               onClick={toggleSidebar}
