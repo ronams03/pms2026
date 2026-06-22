@@ -12,28 +12,45 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
+        console.log('[auth] authorize called', { hasEmail: !!credentials?.email, hasPassword: !!credentials?.password })
+
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Please enter your email and password')
+          console.warn('[auth] missing email or password')
+          return null
         }
 
-        const user = await db.user.findUnique({
-          where: { email: credentials.email.toLowerCase() },
-        })
+        const email = credentials.email.toLowerCase().trim()
 
-        if (!user) {
-          throw new Error('No account found with that email')
-        }
+        try {
+          const user = await db.user.findUnique({
+            where: { email },
+          })
+          console.log('[auth] user lookup result:', user ? `${user.email} (id: ${user.id})` : 'NOT FOUND')
 
-        const isValid = await bcrypt.compare(credentials.password, user.password)
-        if (!isValid) {
-          throw new Error('Incorrect password')
-        }
+          if (!user) {
+            console.warn('[auth] no user found for:', email)
+            return null
+          }
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name || user.email.split('@')[0],
-          image: user.avatar,
+          const isValid = await bcrypt.compare(credentials.password, user.password)
+          console.log('[auth] bcrypt compare result:', isValid)
+
+          if (!isValid) {
+            console.warn('[auth] password mismatch for:', email)
+            return null
+          }
+
+          const result = {
+            id: user.id,
+            email: user.email,
+            name: user.name || user.email.split('@')[0],
+            image: user.avatar,
+          }
+          console.log('[auth] authorize success:', result.email)
+          return result
+        } catch (err) {
+          console.error('[auth] authorize threw:', err)
+          return null
         }
       },
     }),
@@ -62,4 +79,5 @@ export const authOptions: NextAuthOptions = {
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
+  debug: false,
 }

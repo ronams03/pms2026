@@ -149,3 +149,30 @@ Stage Summary:
 - Cinematic auth screen matches app design language (glassmorphism, amber gradients, ambient blobs)
 - App is now gated — unauthenticated users see login, authenticated see workspace
 - Sidebar user section shows the real logged-in user with logout option
+
+---
+Task ID: 5
+Agent: main
+Task: Fix "can't proceed to dashboard after login" issue
+
+Work Log:
+- Diagnosed via dev log: POST /api/auth/callback/credentials returned 200 in only 9ms (real bcrypt.compare takes 100-300ms), and session was empty {} → authorize was failing silently before bcrypt
+- Root cause: the authorize function did credentials.email.toLowerCase() but NOT .trim(), while registration DID trim. If the user's email had leading/trailing whitespace (browser autofill, typing), the DB lookup failed → user not found → login failed silently
+- Confirmed via direct DB test: lookup for 'kristinedais14@gmail.com' (exact) = FOUND, lookup for ' kristinedais14@gmail.com ' (with spaces) = NOT FOUND
+- Fixed authorize: added .trim() to email normalization
+- Changed authorize to return null instead of throw (NextAuth v4 recommended pattern — throwing masks errors as "CredentialsSignin")
+- Added server-side console logging to authorize for future diagnostics
+- Improved client-side error handling: maps "CredentialsSignin" to "Invalid email or password. Please check your credentials and try again."
+- Changed post-login redirect from window.location.reload() to window.location.href = '/' for cleaner full navigation
+- Verified all 3 scenarios with Agent Browser:
+  1. Register → auto-login → dashboard loads ✅ (301ms bcrypt, session created)
+  2. Login with correct creds + whitespace in email → dashboard loads ✅ (trim fix works)
+  3. Login with wrong password → stays on login with clear "Invalid email or password" error ✅
+- Cleaned up test accounts; real user account (kristinedais14@gmail.com) intact
+- Lint: passed clean
+
+Stage Summary:
+- Login now works reliably regardless of whitespace in email input
+- Clear error messages instead of cryptic "CredentialsSignin"
+- Server-side logging in place for future auth debugging
+- All auth flows verified end-to-end

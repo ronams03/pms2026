@@ -50,18 +50,19 @@ export function AuthScreen() {
         redirect: false,
       })
 
-      if (result?.error) {
-        throw new Error(result.error)
-      }
-      if (!result?.ok) {
-        throw new Error('Authentication failed')
+      // NextAuth v4 masks authorize errors as "CredentialsSignin"
+      if (result?.error || !result?.ok) {
+        const msg = result?.error === 'CredentialsSignin'
+          ? 'Invalid email or password. Please check your credentials and try again.'
+          : (result?.error || 'Authentication failed')
+        throw new Error(msg)
       }
 
       toast.success(mode === 'login' ? 'Welcome back!' : 'Account ready!', {
         description: 'Redirecting to your workspace…',
       })
-      // Reload to refresh session state
-      setTimeout(() => window.location.reload(), 600)
+      // Full navigation to ensure session cookie is picked up cleanly
+      setTimeout(() => { window.location.href = '/' }, 800)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
