@@ -1,9 +1,10 @@
 'use client'
 
 import { useAppStore } from '@/lib/store/app-store'
+import { useAuth } from '@/components/pm/auth-provider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Bell, Search, Menu, Command, Plus, Sparkles } from 'lucide-react'
+import { Bell, Search, Menu, Command, Plus, Sparkles, LogOut } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import {
   DropdownMenu,
@@ -16,6 +17,7 @@ import {
 import { useState } from 'react'
 import { CreateProjectModal } from '@/components/pm/modals/create-project-modal'
 import { CreateTaskModal } from '@/components/pm/modals/create-task-modal'
+import { toast } from 'sonner'
 
 const pageTitles: Record<string, { title: string; subtitle: string }> = {
   dashboard: { title: 'Dashboard', subtitle: 'Your cinematic project overview' },
@@ -28,9 +30,15 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
 
 export function Topbar() {
   const { currentPage, toggleSidebar, setCommandOpen, setPage } = useAppStore()
+  const { logout } = useAuth()
   const [projectModalOpen, setProjectModalOpen] = useState(false)
   const [taskModalOpen, setTaskModalOpen] = useState(false)
   const info = pageTitles[currentPage] ?? pageTitles.dashboard
+
+  const handleLogout = async () => {
+    await logout()
+    toast.success('Signed out', { description: 'See you soon!' })
+  }
 
   return (
     <>
@@ -138,6 +146,16 @@ export function Topbar() {
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {/* Logout */}
+        <button
+          onClick={handleLogout}
+          className="relative p-2.5 rounded-xl bg-white/5 hover:bg-rose-500/10 border border-white/5 hover:border-rose-500/30 text-muted-foreground hover:text-rose-400 transition-all duration-200"
+          aria-label="Sign out"
+          title="Sign out"
+        >
+          <LogOut className="h-4 w-4" />
+        </button>
       </header>
 
       <CreateProjectModal open={projectModalOpen} onOpenChange={setProjectModalOpen} />

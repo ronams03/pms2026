@@ -210,3 +210,21 @@ Stage Summary:
 - Login/register updates React state directly → instant dashboard transition
 - Session persists via httpOnly cookie across refreshes
 - All existing users reset — user can register a fresh account
+
+---
+Task ID: 7
+Agent: main
+Task: Add logout (make it prominent)
+
+Work Log:
+- Logout already existed in the sidebar user dropdown menu (hidden behind avatar click)
+- Added a dedicated, always-visible Logout button to the Topbar (right side, next to notifications bell)
+- Button uses LogOut icon, hover state turns rose-red to signal destructive action
+- Wired to useAuth().logout() + toast "Signed out" confirmation
+- Verified with Agent Browser: clicking the topbar Sign out button instantly returns to login screen
+- Kept the sidebar dropdown logout too (both work)
+- Lint: passed clean. No errors.
+
+Stage Summary:
+- Logout now available in TWO places: dedicated topbar button (always visible) + sidebar user dropdown
+- Both call the same logout() which clears the session cookie and returns to the auth screen instantly
