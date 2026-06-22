@@ -1,0 +1,79 @@
+// Prisma schema for Project Management System
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String   @default("")
+  status      String   @default("planning") // planning, active, on_hold, completed
+  priority    String   @default("medium")   // low, medium, high, critical
+  progress    Int      @default(0)          // 0-100
+  color       String   @default("amber")    // amber, emerald, rose, violet, cyan
+  startDate   DateTime @default(now())
+  dueDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tasks       Task[]
+  events      Event[]
+  activities  Activity[]
+}
+
+model Task {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @default("")
+  status      String   @default("backlog") // backlog, in_progress, review, done
+  priority    String   @default("medium")  // low, medium, high, urgent
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  assigneeId  String?
+  assigneeName String?
+  assigneeAvatar String?
+  dueDate     DateTime?
+  tags        String   @default("") // comma-separated
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TeamMember {
+  id         String   @id @default(cuid())
+  name       String
+  role       String
+  email      String
+  department String   @default("Engineering")
+  avatar     String   @default("") // color seed or initials
+  status     String   @default("active") // active, away, offline
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  type        String   // project_created, task_completed, member_joined, etc.
+  title       String
+  description String   @default("")
+  userName    String   @default("System")
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @default("")
+  date        DateTime
+  time        String   @default("09:00")
+  type        String   @default("meeting") // meeting, deadline, milestone, review
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
