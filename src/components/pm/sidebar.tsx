@@ -11,7 +11,6 @@ import {
   Settings,
   Sparkles,
   ChevronLeft,
-  Zap,
   type LucideIcon,
 } from 'lucide-react'
 import type { PageKey } from '@/lib/types'
@@ -127,30 +126,6 @@ export function Sidebar() {
               )
             })}
           </nav>
-
-          {/* Upgrade card */}
-          <div className="p-3 shrink-0">
-            <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-transparent p-4">
-              <div className="absolute -right-6 -top-6 h-20 w-20 rounded-full bg-amber-500/20 blur-2xl" />
-              <div className="relative">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-3d-amber">
-                    <Zap className="h-3.5 w-3.5 text-background" strokeWidth={2.5} />
-                  </div>
-                  <p className="text-sm font-semibold">Pro Plan</p>
-                </div>
-                <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
-                  Unlock unlimited projects, advanced analytics & AI insights.
-                </p>
-                <button
-                  onClick={() => useAppStore.getState().setPage('settings')}
-                  className="w-full text-xs font-medium py-2 rounded-lg bg-gradient-to-r from-amber-400 to-orange-600 text-background hover:shadow-3d-amber transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  Upgrade now
-                </button>
-              </div>
-            </div>
-          </div>
 
           {/* User */}
           <div className="px-3 pb-4 shrink-0">

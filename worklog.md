@@ -106,3 +106,18 @@ Stage Summary:
 - All 3 list pages (Projects, Tasks, Team) now default to list view with card/board as optional toggle
 - All card edge colors removed (project top bar, task left bar, team corner glow blob)
 - List views include functional features: inline status dropdowns on Tasks, status filter, all existing CRUD actions preserved via dropdown menus
+
+---
+Task ID: 3
+Agent: main
+Task: Remove the upgrade display from the sidebar
+
+Work Log:
+- Removed the entire "Pro Plan / Upgrade now" card section from the sidebar component
+- Removed the now-unused Zap icon import
+- Verified no other "Pro Plan" / "Upgrade" references remain in the codebase
+- Lint: passed clean. Browser: no errors, upgrade card no longer renders.
+
+Stage Summary:
+- Sidebar is now cleaner: navigation → user profile (no upgrade card in between)
+- No "Pro Plan" or "Upgrade" text anywhere in the app
