@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
+import { useAuth } from '@/components/pm/auth-provider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils'
 type Mode = 'login' | 'register'
 
 export function AuthScreen() {
+  const { login, register } = useAuth()
   const [mode, setMode] = useState<Mode>('login')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -32,37 +33,14 @@ export function AuthScreen() {
     setLoading(true)
     try {
       if (mode === 'register') {
-        const res = await fetch('/api/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(form),
-        })
-        const data = await res.json()
-        if (!res.ok) {
-          throw new Error(data.error || 'Registration failed')
-        }
+        await register(form.name, form.email, form.password)
         toast.success('Account created!', { description: 'Welcome to Project Management System.' })
+      } else {
+        await login(form.email, form.password)
+        toast.success('Welcome back!', { description: 'Loading your workspace…' })
       }
-
-      const result = await signIn('credentials', {
-        email: form.email,
-        password: form.password,
-        redirect: false,
-      })
-
-      // NextAuth v4 masks authorize errors as "CredentialsSignin"
-      if (result?.error || !result?.ok) {
-        const msg = result?.error === 'CredentialsSignin'
-          ? 'Invalid email or password. Please check your credentials and try again.'
-          : (result?.error || 'Authentication failed')
-        throw new Error(msg)
-      }
-
-      toast.success(mode === 'login' ? 'Welcome back!' : 'Account ready!', {
-        description: 'Redirecting to your workspace…',
-      })
-      // Full navigation to ensure session cookie is picked up cleanly
-      setTimeout(() => { window.location.href = '/' }, 800)
+      // The AuthProvider state update triggers AppShell to re-render → dashboard shows.
+      // No manual navigation needed.
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong')
     } finally {

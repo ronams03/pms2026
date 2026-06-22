@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/components/pm/auth-provider'
 import { useAppStore } from '@/lib/store/app-store'
 import { Sidebar } from '@/components/pm/sidebar'
 import { Topbar } from '@/components/pm/topbar'
@@ -17,13 +17,13 @@ import { toast } from 'sonner'
 import { Sparkles } from 'lucide-react'
 
 export function AppShell() {
-  const { data: session, status } = useSession()
+  const { user, loading } = useAuth()
   const { currentPage, commandOpen, setCommandOpen } = useAppStore()
   const [seeding, setSeeding] = useState(false)
 
   // Seed on first mount if empty (only when authenticated)
   useEffect(() => {
-    if (status !== 'authenticated') return
+    if (!user) return
     ;(async () => {
       try {
         const res = await fetch('/api/projects')
@@ -43,7 +43,7 @@ export function AppShell() {
         setSeeding(false)
       }
     })()
-  }, [status])
+  }, [user])
 
   // Keyboard shortcut for command palette
   useEffect(() => {
@@ -58,7 +58,7 @@ export function AppShell() {
   }, [commandOpen, setCommandOpen])
 
   // Loading state while checking session
-  if (status === 'loading') {
+  if (loading) {
     return (
       <div className="min-h-screen bg-cinematic flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -78,7 +78,7 @@ export function AppShell() {
   }
 
   // Not authenticated → show auth screen
-  if (status === 'unauthenticated' || !session) {
+  if (!user) {
     return <AuthScreen />
   }
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useSession, signOut } from 'next-auth/react'
+import { useAuth } from '@/components/pm/auth-provider'
 import { useAppStore } from '@/lib/store/app-store'
 import { cn } from '@/lib/utils'
 import { colorGradients, getInitials } from '@/lib/pm-helpers'
@@ -47,18 +47,17 @@ const navItems: NavItem[] = [
 
 export function Sidebar() {
   const { currentPage, setPage, sidebarCollapsed, toggleSidebar } = useAppStore()
-  const { data: session } = useSession()
+  const { user, logout } = useAuth()
 
-  const userName = session?.user?.name || session?.user?.email?.split('@')[0] || 'User'
-  const userEmail = session?.user?.email || ''
-  const userAvatar = (session?.user as { avatar?: string } | undefined)?.avatar || 'amber'
+  const userName = user?.name || user?.email?.split('@')[0] || 'User'
+  const userEmail = user?.email || ''
+  const userAvatar = user?.avatar || 'amber'
   const initials = getInitials(userName)
   const grad = colorGradients[(userAvatar as keyof typeof colorGradients) || 'amber']
 
   const handleLogout = async () => {
+    await logout()
     toast.success('Signed out', { description: 'See you soon!' })
-    await signOut({ redirect: false })
-    setTimeout(() => window.location.reload(), 400)
   }
 
   return (
