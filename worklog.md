@@ -458,3 +458,40 @@ Stage Summary:
 - Unchecking = session-only (cleared on browser close)
 - The restore is instant (lazy useState reads localStorage before first paint, no flash)
 - Server-side validation on mount ensures security: stale localStorage is cleared if the server session is gone
+
+---
+Task ID: 15
+Agent: main
+Task: Add sample image view in README.md (GitHub-renderable)
+
+Work Log:
+- Created docs/screenshots/ directory for organized image storage
+- Captured 10 fresh, clean screenshots of all key pages using Agent Browser:
+  1. 00-login.png — Login/Register auth screen (cinematic split layout)
+  2. 01-dashboard.png — Dashboard with stats, charts, activity feed
+  3. 02-projects.png — Projects page (list view default)
+  4. 03-tasks.png — Tasks page (list view default)
+  5. 04-team.png — Team page with member cards
+  6. 05-calendar.png — Calendar with monthly events
+  7. 06-settings.png — Settings with tabs
+  8. 07-kanban.png — Tasks Kanban board view (drag & drop)
+  9. 08-command-palette.png — Command palette (Ctrl+K)
+  10. 09-light-mode.png — Light mode dashboard
+- Created comprehensive README.md (188 lines) with:
+  - Project title + badges (License, Next.js, TypeScript, Tailwind, Prisma)
+  - Features overview
+  - All 10 screenshots with descriptive headings and relative image paths (GitHub-renderable)
+  - Tech stack table
+  - Getting started instructions
+  - Database schema
+  - Design system description
+  - Project structure tree
+  - License
+- Verified all 10 image references resolve to existing files
+- Cleaned up 49 old screenshots from root directory (now organized in docs/screenshots/)
+- Lint: passed clean
+
+Stage Summary:
+- README.md with 10 sample images that render on GitHub (relative paths: docs/screenshots/*.png)
+- Covers all major pages: login, dashboard, projects, tasks (list + kanban), team, calendar, settings, command palette, light mode
+- Organized in docs/screenshots/ folder for clean repo structure
