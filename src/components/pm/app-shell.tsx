@@ -14,7 +14,6 @@ import { SettingsPage } from '@/components/pm/pages/settings'
 import { CommandPalette } from '@/components/pm/command-palette'
 import { AuthScreen } from '@/components/pm/auth-screen'
 import { toast } from 'sonner'
-import { Sparkles } from 'lucide-react'
 
 export function AppShell() {
   const { user, loading } = useAuth()
@@ -63,9 +62,13 @@ export function AppShell() {
       <div className="min-h-screen bg-cinematic flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-orange-600 blur-md opacity-60 animate-pulse" />
-            <div className="relative h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-3d-amber">
-              <Sparkles className="h-7 w-7 text-background" strokeWidth={2.5} />
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-orange-600 blur-md opacity-50 animate-pulse" />
+            <div className="relative h-14 w-14 rounded-2xl overflow-hidden shadow-3d-amber ring-1 ring-white/10">
+              <img
+                src="/logo-pm.png"
+                alt="Project Management System logo"
+                className="h-full w-full object-cover"
+              />
             </div>
           </div>
           <div className="flex items-center gap-2">

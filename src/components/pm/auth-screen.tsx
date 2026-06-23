@@ -5,7 +5,7 @@ import { useAuth } from '@/components/pm/auth-provider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Sparkles, Mail, Lock, User, ArrowRight, Loader2, Eye, EyeOff, ShieldCheck, Zap, Target } from 'lucide-react'
+import { Mail, Lock, User, ArrowRight, Loader2, Eye, EyeOff, ShieldCheck, Zap, Target } from 'lucide-react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
@@ -72,9 +72,13 @@ export function AuthScreen() {
         >
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-orange-600 blur-md opacity-60" />
-              <div className="relative h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-3d-amber">
-                <Sparkles className="h-7 w-7 text-background" strokeWidth={2.5} />
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-orange-600 blur-md opacity-50" />
+              <div className="relative h-14 w-14 rounded-2xl overflow-hidden shadow-3d-amber ring-1 ring-white/10">
+                <img
+                  src="/logo-pm.png"
+                  alt="Project Management System logo"
+                  className="h-full w-full object-cover"
+                />
               </div>
             </div>
             <div>
@@ -125,9 +129,13 @@ export function AuthScreen() {
             {/* Mobile logo */}
             <div className="lg:hidden flex items-center justify-center gap-3 pt-8">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-orange-600 blur-md opacity-60" />
-                <div className="relative h-11 w-11 rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-3d-amber">
-                  <Sparkles className="h-5 w-5 text-background" strokeWidth={2.5} />
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-orange-600 blur-md opacity-50" />
+                <div className="relative h-11 w-11 rounded-xl overflow-hidden shadow-3d-amber ring-1 ring-white/10">
+                  <img
+                    src="/logo-pm.png"
+                    alt="Project Management System logo"
+                    className="h-full w-full object-cover"
+                  />
                 </div>
               </div>
             </div>

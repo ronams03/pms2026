@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   keywords: ["project management", "kanban", "dashboard", "team", "cinematic", "3D"],
   authors: [{ name: "Nexus Team" }],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: "/logo-pm.png",
   },
 };
 

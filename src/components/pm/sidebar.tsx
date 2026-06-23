@@ -11,7 +11,6 @@ import {
   Users,
   CalendarDays,
   Settings,
-  Sparkles,
   ChevronLeft,
   LogOut,
   User as UserIcon,
@@ -82,9 +81,13 @@ export function Sidebar() {
           {/* Logo */}
           <div className="flex items-center gap-3 px-6 h-20 border-b border-white/5 shrink-0">
             <div className="relative shrink-0">
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-orange-600 blur-md opacity-60" />
-              <div className="relative h-10 w-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-3d-amber">
-                <Sparkles className="h-5 w-5 text-background" strokeWidth={2.5} />
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-orange-600 blur-md opacity-50" />
+              <div className="relative h-10 w-10 rounded-xl overflow-hidden shadow-3d-amber ring-1 ring-white/10">
+                <img
+                  src="/logo-pm.png"
+                  alt="Project Management System logo"
+                  className="h-full w-full object-cover"
+                />
               </div>
             </div>
             <div className="flex-1 min-w-0">

@@ -228,3 +228,26 @@ Work Log:
 Stage Summary:
 - Logout now available in TWO places: dedicated topbar button (always visible) + sidebar user dropdown
 - Both call the same logout() which clears the session cookie and returns to the auth screen instantly
+
+---
+Task ID: 8
+Agent: main
+Task: Change logo to project-related logo
+
+Work Log:
+- Generated a custom project-management themed logo using the image-generation skill (z-ai CLI)
+  - Prompt: abstract geometric mark combining a checklist clipboard with a rising bar chart arrow, amber gold/orange gradient on dark charcoal, flat vector app-icon style
+  - Output: public/logo-pm.png (1024x1024)
+- Replaced the Sparkles icon logo with the new image logo in 3 places:
+  1. Sidebar header (40x40 rounded img in amber-glow container)
+  2. Auth screen — desktop branding (56x56) + mobile logo (44x44)
+  3. AppShell loading spinner (56x56)
+- Updated browser favicon metadata in layout.tsx to use /logo-pm.png
+- Removed now-unused Sparkles imports from sidebar.tsx, auth-screen.tsx, app-shell.tsx
+- Verified with Agent Browser: new logo renders on auth screen + sidebar dashboard
+- Lint: passed clean. No errors.
+
+Stage Summary:
+- All Sparkles icon logos replaced with the generated project-management logo image
+- Logo appears on: sidebar, auth screen (desktop + mobile), loading screen, browser tab favicon
+- Consistent amber/orange branding maintained across the cinematic theme
