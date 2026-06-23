@@ -356,3 +356,34 @@ Stage Summary:
 - Checked (default) → stays logged in for 30 days
 - Unchecked → session-only, logs out when browser closes
 - Cinematic amber-gradient checkbox styling matches the app theme
+
+---
+Task ID: 12
+Agent: main
+Task: Fix light mode contrast for "Welcome back"/"Create your account" headings and toast indicators
+
+Work Log:
+- Root cause 1: "Welcome back"/"Create your account" use text-gradient-animated (amber gradient text) which is near-invisible on light backgrounds
+- Root cause 2: Sonner toaster used next-themes' useTheme (returns "system") instead of our custom ThemeProvider, so toasts stayed dark-themed in light mode (dark bg + light text = unreadable, "not showing properly")
+- Root cause 3: Both <Toaster/> and <SonnerToaster/> were rendered OUTSIDE <Providers> in layout.tsx, so when SonnerToaster tried to use our useTheme it threw "useTheme must be used within a ThemeProvider" → page crashed on reload
+
+Fixes:
+1. Added light-mode overrides in globals.css for gradient text utilities:
+   - .light .text-gradient-animated → darker amber→orange gradient (lightness ~40-55) readable on white
+   - .light .text-gradient-amber → darker amber gradient
+   - .light .text-gradient-emerald → darker emerald gradient
+2. Rewrote src/components/ui/sonner.tsx to import useTheme from our custom theme-provider (instead of next-themes) so the toaster follows the dark/light toggle
+3. Moved <Toaster/> and <SonnerToaster/> INSIDE <Providers> in layout.tsx so they have access to ThemeProvider context
+
+Verified with Agent Browser:
+- Light mode "Welcome back" heading now renders dark amber gradient text (lightness ~40) on white = readable ✅
+- Logout toast in light mode: bg=white (lab 100), text=near-black (lab 5) = correct light theme styling ✅
+- Login toast in light mode: same correct light styling ✅
+- Theme class properly applied on reload (no more crash) ✅
+- No server/console errors
+- Lint: passed clean
+
+Stage Summary:
+- "Welcome back" / "Create your account" headings now readable in light mode (darker amber gradient)
+- Toast notifications (login success, logout, etc.) now follow the active theme — light bg/dark text in light mode, dark bg/light text in dark mode
+- Fixed page crash caused by Sonner toaster using useTheme outside ThemeProvider

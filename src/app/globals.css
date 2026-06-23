@@ -210,6 +210,29 @@
   text-shadow: 0 0 10px oklch(0.65 0.17 162 / 30%);
 }
 
+/* Gradient text: in light mode the amber-on-transparent is too faint.
+   Use a darker amber→orange gradient that reads well on light backgrounds. */
+.light .text-gradient-animated {
+  background: linear-gradient(90deg, oklch(0.55 0.18 50), oklch(0.50 0.20 35), oklch(0.45 0.20 25), oklch(0.50 0.20 35), oklch(0.55 0.18 50));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 4s ease-in-out infinite;
+}
+.light .text-gradient-amber {
+  background: linear-gradient(135deg, oklch(0.55 0.18 50), oklch(0.48 0.20 30));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.light .text-gradient-emerald {
+  background: linear-gradient(135deg, oklch(0.50 0.15 160), oklch(0.45 0.16 170));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 /* Gradient buttons/avatars: ensure dark text on amber in light mode for contrast.
    The components use `text-background` which is light in light mode — override to dark. */
 .light .bg-gradient-to-br.from-amber-400,

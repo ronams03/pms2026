@@ -44,9 +44,9 @@ export default function RootLayout({
       >
         <Providers>
           {children}
+          <Toaster />
+          <SonnerToaster />
         </Providers>
-        <Toaster />
-        <SonnerToaster />
       </body>
     </html>
   );
