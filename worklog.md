@@ -387,3 +387,43 @@ Stage Summary:
 - "Welcome back" / "Create your account" headings now readable in light mode (darker amber gradient)
 - Toast notifications (login success, logout, etc.) now follow the active theme — light bg/dark text in light mode, dark bg/light text in dark mode
 - Fixed page crash caused by Sonner toaster using useTheme outside ThemeProvider
+
+---
+Task ID: 13
+Agent: main
+Task: Make all cards clickable — navigate to related pages or open edit modals
+
+Work Log:
+- Dashboard stat cards: added onClick navigation to related pages
+  - Total Projects → Projects page
+  - Tasks Completed → Tasks page
+  - Team Members → Team page
+  - Completion Rate → Tasks page
+  - Added cursor-pointer + group hover effect on background blob
+- Dashboard recent project cards: changed onClick from setPage('projects') to { setSelectedProjectId(p.id); setPage('tasks') } → navigates to Tasks page filtered by that project
+- Tasks page: added useAppStore selectedProjectId sync — useEffect reads selectedProjectId from store on mount and sets the local projectFilter, so arriving from Dashboard shows the filtered tasks
+- Projects grid cards: added onClick={() => handleEdit(p)} to open the edit modal; added stopPropagation on the dropdown menu trigger so the menu button doesn't trigger the card click
+- Projects list rows: added onClick={() => handleEdit(p)} + cursor-pointer; stopPropagation on dropdown trigger
+- Team grid cards: added onClick to open edit member modal; stopPropagation on dropdown trigger
+- Team list rows: added onClick to open edit member modal; stopPropagation on dropdown trigger
+- Tasks Kanban cards: added onClick={() => onEdit(task)} to open edit task modal; changed cursor-grab to cursor-pointer; added stopPropagation on drag handle + dropdown trigger
+- Tasks list rows: added onClick={() => handleEdit(task)}; stopPropagation on inline status Select wrapper + dropdown trigger
+- Verified with Agent Browser:
+  - Dashboard stat card "Total Projects" → navigates to Projects page ✅
+  - Dashboard recent project "AI Insights Engine" → navigates to Tasks page with filter set to that project ✅
+  - Projects grid card "AI Insights Engine" → opens Edit Project modal ✅
+  - Team grid card "Diego Torres" → opens Edit Member modal ✅
+  - Tasks list row "Design token system v2" → opens Edit Task modal ✅
+  - Tasks Kanban card "Build 3D card components" → opens Edit Task modal ✅
+  - Dropdown menus still work independently (stopPropagation prevents card click)
+  - Inline status Select on tasks list still works (stopPropagation prevents row click)
+- Lint: passed clean. No recent server errors.
+
+Stage Summary:
+- Every card/row in the system is now clickable:
+  - Dashboard stats → navigate to related page (Projects/Tasks/Team)
+  - Dashboard recent projects → Tasks page filtered by that project
+  - Project cards/rows → Edit Project modal
+  - Team member cards/rows → Edit Member modal
+  - Task cards/rows (list + Kanban) → Edit Task modal
+- All dropdown menus, drag handles, and inline controls still work independently via stopPropagation

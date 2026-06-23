@@ -226,7 +226,10 @@ export function ProjectsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: i * 0.04 }}
               >
-                <Card className="group relative overflow-hidden glass border-white/5 card-3d hover:shadow-3d-lg h-full flex flex-col">
+                <Card
+                  onClick={() => handleEdit(p)}
+                  className="group relative overflow-hidden glass border-white/5 card-3d hover:shadow-3d-lg h-full flex flex-col cursor-pointer"
+                >
                   <div className="p-5 flex-1 flex flex-col">
                     <div className="flex items-start justify-between mb-3">
                       <div className={`h-11 w-11 rounded-xl bg-gradient-to-br ${grad.bg} flex items-center justify-center shadow-3d ${grad.glow}`}>
@@ -234,7 +237,10 @@ export function ProjectsPage() {
                       </div>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <button className="p-1.5 rounded-lg hover:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={(e) => e.stopPropagation()}
+                            className="p-1.5 rounded-lg hover:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
                             <MoreVertical className="h-4 w-4 text-muted-foreground" />
                           </button>
                         </DropdownMenuTrigger>
@@ -308,7 +314,11 @@ export function ProjectsPage() {
             {filtered.map((p) => {
               const grad = colorGradients[p.color]
               return (
-                <div key={p.id} className="flex items-center gap-3 p-4 hover:bg-white/3 transition-colors group">
+                <div
+                  key={p.id}
+                  onClick={() => handleEdit(p)}
+                  className="flex items-center gap-3 p-4 hover:bg-white/3 transition-colors group cursor-pointer"
+                >
                   <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${grad.bg} flex items-center justify-center shadow-3d shrink-0`}>
                     <FolderKanban className="h-4 w-4 text-background" strokeWidth={2.3} />
                   </div>
@@ -331,7 +341,10 @@ export function ProjectsPage() {
                   <div className="hidden lg:block text-xs text-muted-foreground w-24">{formatDate(p.dueDate)}</div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="p-1.5 rounded-lg hover:bg-white/10">
+                      <button
+                        onClick={(e) => e.stopPropagation()}
+                        className="p-1.5 rounded-lg hover:bg-white/10"
+                      >
                         <MoreVertical className="h-4 w-4 text-muted-foreground" />
                       </button>
                     </DropdownMenuTrigger>

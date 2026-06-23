@@ -214,7 +214,8 @@ export function TeamPage() {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: i * 0.03 }}
-                  className="group grid grid-cols-12 gap-3 px-4 py-3 items-center hover:bg-white/3 transition-colors"
+                  onClick={() => { setEditing(m); setModalOpen(true) }}
+                  className="group grid grid-cols-12 gap-3 px-4 py-3 items-center hover:bg-white/3 transition-colors cursor-pointer"
                 >
                   <div className="col-span-12 md:col-span-4 flex items-center gap-3 min-w-0">
                     <div className="relative shrink-0">
@@ -251,7 +252,10 @@ export function TeamPage() {
                   <div className="col-span-12 md:col-span-1 flex justify-end">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <button className="p-1.5 rounded-lg hover:bg-white/10 text-muted-foreground">
+                        <button
+                          onClick={(e) => e.stopPropagation()}
+                          className="p-1.5 rounded-lg hover:bg-white/10 text-muted-foreground"
+                        >
                           <MoreVertical className="h-4 w-4" />
                         </button>
                       </DropdownMenuTrigger>
@@ -286,7 +290,10 @@ export function TeamPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: i * 0.04 }}
               >
-                <Card className="group relative overflow-hidden glass border-white/5 card-3d hover:shadow-3d-lg p-5">
+                <Card
+                  onClick={() => { setEditing(m); setModalOpen(true) }}
+                  className="group relative overflow-hidden glass border-white/5 card-3d hover:shadow-3d-lg p-5 cursor-pointer"
+                >
                   <div className="relative">
                     <div className="flex items-start justify-between mb-4">
                       <div className="relative">
@@ -297,7 +304,10 @@ export function TeamPage() {
                       </div>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <button className="p-1.5 rounded-lg hover:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={(e) => e.stopPropagation()}
+                            className="p-1.5 rounded-lg hover:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
                             <MoreVertical className="h-4 w-4 text-muted-foreground" />
                           </button>
                         </DropdownMenuTrigger>

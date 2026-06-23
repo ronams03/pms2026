@@ -53,6 +53,7 @@ import {
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { useAppStore } from '@/lib/store/app-store'
 
 const columns: { key: TaskStatus; label: string; accent: string; dot: string; gradient: string }[] = [
   { key: 'backlog', label: 'Backlog', accent: 'border-slate-500/30', dot: 'bg-slate-400', gradient: 'from-slate-500/10 to-transparent' },
@@ -82,8 +83,9 @@ function DraggableTaskCard({ task, onEdit, onDelete, isOverlay }: DraggableTaskC
   return (
     <div ref={isOverlay ? undefined : setNodeRef} style={isOverlay ? undefined : style}>
       <Card
+        onClick={() => !isOverlay && onEdit(task)}
         className={cn(
-          'group relative overflow-hidden glass border-white/5 p-3.5 cursor-grab active:cursor-grabbing',
+          'group relative overflow-hidden glass border-white/5 p-3.5 cursor-pointer hover:border-white/10 transition-colors',
           isOverlay && 'shadow-3d-lg rotate-2 scale-105 border-amber-500/40',
         )}
       >
@@ -96,6 +98,7 @@ function DraggableTaskCard({ task, onEdit, onDelete, isOverlay }: DraggableTaskC
               <button
                 {...attributes}
                 {...listeners}
+                onClick={(e) => e.stopPropagation()}
                 className="p-1 rounded hover:bg-white/10 text-muted-foreground/50 hover:text-muted-foreground cursor-grab active:cursor-grabbing"
                 aria-label="Drag task"
               >
@@ -104,7 +107,10 @@ function DraggableTaskCard({ task, onEdit, onDelete, isOverlay }: DraggableTaskC
             )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="p-1 rounded hover:bg-white/10 text-muted-foreground/50 hover:text-muted-foreground">
+                <button
+                  onClick={(e) => e.stopPropagation()}
+                  className="p-1 rounded hover:bg-white/10 text-muted-foreground/50 hover:text-muted-foreground"
+                >
                   <MoreVertical className="h-3.5 w-3.5" />
                 </button>
               </DropdownMenuTrigger>
@@ -255,6 +261,14 @@ export function TasksPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [view, setView] = useState<'list' | 'board'>('list')
   const [activeId, setActiveId] = useState<string | null>(null)
+  const { selectedProjectId } = useAppStore()
+
+  // Sync project filter with store (set when navigating from Dashboard/Projects)
+  useEffect(() => {
+    if (selectedProjectId && selectedProjectId !== 'all') {
+      setProjectFilter(selectedProjectId)
+    }
+  }, [selectedProjectId])
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -465,7 +479,8 @@ export function TasksPage() {
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.25, delay: i * 0.02 }}
-                  className="group grid grid-cols-12 gap-3 px-4 py-3 items-center hover:bg-white/3 transition-colors"
+                  onClick={() => handleEdit(task)}
+                  className="group grid grid-cols-12 gap-3 px-4 py-3 items-center hover:bg-white/3 transition-colors cursor-pointer"
                 >
                   <div className="col-span-12 md:col-span-4 min-w-0">
                     <p className="text-sm font-medium truncate">{task.title}</p>
@@ -488,7 +503,7 @@ export function TasksPage() {
                       ))}
                     </div>
                   </div>
-                  <div className="col-span-6 md:col-span-2 hidden md:block">
+                  <div className="col-span-6 md:col-span-2 hidden md:block" onClick={(e) => e.stopPropagation()}>
                     <Select
                       value={task.status}
                       onValueChange={(v) => handleStatusChange(task.id, v as TaskStatus)}
@@ -529,7 +544,10 @@ export function TasksPage() {
                   <div className="col-span-12 md:col-span-1 flex justify-end">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <button className="p-1.5 rounded-lg hover:bg-white/10 text-muted-foreground">
+                        <button
+                          onClick={(e) => e.stopPropagation()}
+                          className="p-1.5 rounded-lg hover:bg-white/10 text-muted-foreground"
+                        >
                           <MoreVertical className="h-4 w-4" />
                         </button>
                       </DropdownMenuTrigger>

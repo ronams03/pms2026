@@ -44,7 +44,7 @@ export function DashboardPage() {
   const [activities, setActivities] = useState<Activity[]>([])
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
-  const { setPage } = useAppStore()
+  const { setPage, setSelectedProjectId } = useAppStore()
 
   const load = async () => {
     setLoading(true)
@@ -92,10 +92,10 @@ export function DashboardPage() {
   }))
 
   const statCards = [
-    { label: 'Total Projects', value: s.projects, sub: `${s.activeProjects} active`, icon: FolderKanban, color: 'amber', trend: '+12%' },
-    { label: 'Tasks Completed', value: s.completedTasks, sub: `${s.completionRate}% rate`, icon: CheckCircle2, color: 'emerald', trend: '+24%' },
-    { label: 'Team Members', value: s.members, sub: 'across 5 teams', icon: Users, color: 'violet', trend: '+3' },
-    { label: 'Completion Rate', value: `${s.completionRate}%`, sub: 'this quarter', icon: TrendingUp, color: 'cyan', trend: '+8%' },
+    { label: 'Total Projects', value: s.projects, sub: `${s.activeProjects} active`, icon: FolderKanban, color: 'amber', trend: '+12%', page: 'projects' as const },
+    { label: 'Tasks Completed', value: s.completedTasks, sub: `${s.completionRate}% rate`, icon: CheckCircle2, color: 'emerald', trend: '+24%', page: 'tasks' as const },
+    { label: 'Team Members', value: s.members, sub: 'across 5 teams', icon: Users, color: 'violet', trend: '+3', page: 'team' as const },
+    { label: 'Completion Rate', value: `${s.completionRate}%`, sub: 'this quarter', icon: TrendingUp, color: 'cyan', trend: '+8%', page: 'tasks' as const },
   ]
 
   return (
@@ -152,8 +152,11 @@ export function DashboardPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: i * 0.05 }}
             >
-              <Card className="relative overflow-hidden glass border-white/5 card-3d hover:shadow-3d-lg p-4 md:p-5 h-full">
-                <div className={`absolute -top-8 -right-8 h-24 w-24 rounded-full bg-gradient-to-br ${grad.bg} opacity-20 blur-2xl`} />
+              <Card
+                onClick={() => setPage(stat.page)}
+                className="relative overflow-hidden glass border-white/5 card-3d hover:shadow-3d-lg p-4 md:p-5 h-full cursor-pointer group/stat"
+              >
+                <div className={`absolute -top-8 -right-8 h-24 w-24 rounded-full bg-gradient-to-br ${grad.bg} opacity-20 blur-2xl group-hover/stat:opacity-40 transition-opacity`} />
                 <div className="relative">
                   <div className="flex items-start justify-between mb-3">
                     <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${grad.bg} flex items-center justify-center shadow-3d`}>
@@ -278,7 +281,7 @@ export function DashboardPage() {
               return (
                 <button
                   key={p.id}
-                  onClick={() => setPage('projects')}
+                  onClick={() => { setSelectedProjectId(p.id); setPage('tasks') }}
                   className="w-full group flex items-center gap-3 p-3 rounded-xl bg-white/3 hover:bg-white/5 border border-white/5 hover:border-white/10 transition-all duration-200 text-left card-3d"
                 >
                   <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${grad.bg} flex items-center justify-center shadow-3d shrink-0`}>
