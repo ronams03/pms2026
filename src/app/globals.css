@@ -140,6 +140,100 @@
   }
 }
 
+/* ============ LIGHT MODE OVERRIDES ============ */
+/* The app was designed dark-first with white/X opacity tints. In light mode
+   those become invisible, so we remap the key patterns to dark tints. */
+.light {
+  /* Glass panels: use dark tint instead of white tint */
+  --glass-tint: rgba(0, 0, 0, 0.04);
+  --glass-tint-strong: rgba(0, 0, 0, 0.06);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-border-strong: rgba(0, 0, 0, 0.10);
+  --hairline: rgba(0, 0, 0, 0.06);
+}
+.dark {
+  --glass-tint: rgba(255, 255, 255, 0.05);
+  --glass-tint-strong: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-strong: rgba(255, 255, 255, 0.10);
+  --hairline: rgba(255, 255, 255, 0.05);
+}
+
+/* In light mode, override the hardcoded white/X utilities used across components */
+.light .bg-white\/3 { background-color: rgba(0, 0, 0, 0.03); }
+.light .bg-white\/5 { background-color: rgba(0, 0, 0, 0.04); }
+.light .bg-white\/10 { background-color: rgba(0, 0, 0, 0.06); }
+.light .hover\:bg-white\/3:hover { background-color: rgba(0, 0, 0, 0.03); }
+.light .hover\:bg-white\/5:hover { background-color: rgba(0, 0, 0, 0.04); }
+.light .hover\:bg-white\/10:hover { background-color: rgba(0, 0, 0, 0.06); }
+.light .border-white\/5 { border-color: rgba(0, 0, 0, 0.08); }
+.light .border-white\/10 { border-color: rgba(0, 0, 0, 0.10); }
+.light .divide-white\/5 > * + * { border-color: rgba(0, 0, 0, 0.06); }
+.light .border-b-white\/5 { border-bottom-color: rgba(0, 0, 0, 0.08); }
+.light .border-t-white\/5 { border-top-color: rgba(0, 0, 0, 0.08); }
+
+/* Glass utilities adapt via CSS vars */
+.light .glass {
+  background: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,255,255,0.65));
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border);
+}
+.light .glass-strong {
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.82));
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid var(--glass-border-strong);
+}
+
+/* Soften the cinematic background in light mode */
+.light .bg-cinematic {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.68 0.16 70 / 10%), transparent),
+    radial-gradient(ellipse 60% 50% at 100% 100%, oklch(0.65 0.17 162 / 8%), transparent),
+    var(--background);
+}
+
+/* Film grain barely visible in light mode */
+.light .film-grain::before {
+  opacity: 0.015;
+}
+
+/* Glow text effects softer in light mode */
+.light .text-glow-amber {
+  text-shadow: 0 0 10px oklch(0.68 0.16 70 / 30%);
+}
+.light .text-glow-soft {
+  text-shadow: none;
+}
+.light .text-glow-emerald {
+  text-shadow: 0 0 10px oklch(0.65 0.17 162 / 30%);
+}
+
+/* Gradient buttons/avatars: ensure dark text on amber in light mode for contrast.
+   The components use `text-background` which is light in light mode — override to dark. */
+.light .bg-gradient-to-br.from-amber-400,
+.light .bg-gradient-to-br.from-amber-400\/20,
+.light .bg-gradient-to-r.from-amber-400 {
+  color: oklch(0.18 0.02 270) !important;
+}
+.light .bg-gradient-to-br.from-emerald-500,
+.light .bg-gradient-to-r.from-emerald-500 {
+  color: oklch(0.99 0 0) !important;
+}
+.light .bg-gradient-to-br.from-violet-500,
+.light .bg-gradient-to-r.from-violet-500 {
+  color: oklch(0.99 0 0) !important;
+}
+.light .bg-gradient-to-br.from-rose-500,
+.light .bg-gradient-to-r.from-rose-500 {
+  color: oklch(0.99 0 0) !important;
+}
+.light .bg-gradient-to-br.from-cyan-500,
+.light .bg-gradient-to-br.from-slate-500 {
+  color: oklch(0.99 0 0) !important;
+}
+
 /* ============ CINEMATIC UTILITIES ============ */
 @layer utilities {
   /* Glassmorphism panel */

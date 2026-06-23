@@ -2,9 +2,10 @@
 
 import { useAppStore } from '@/lib/store/app-store'
 import { useAuth } from '@/components/pm/auth-provider'
+import { useTheme } from '@/components/pm/theme-provider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Bell, Search, Menu, Command, Plus, Sparkles, LogOut } from 'lucide-react'
+import { Bell, Search, Menu, Command, Plus, Sparkles, LogOut, Sun, Moon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import {
   DropdownMenu,
@@ -31,6 +32,7 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
 export function Topbar() {
   const { currentPage, toggleSidebar, setCommandOpen, setPage } = useAppStore()
   const { logout } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const [projectModalOpen, setProjectModalOpen] = useState(false)
   const [taskModalOpen, setTaskModalOpen] = useState(false)
   const info = pageTitles[currentPage] ?? pageTitles.dashboard
@@ -146,6 +148,16 @@ export function Topbar() {
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {/* Theme toggle */}
+        <button
+          onClick={toggleTheme}
+          className="relative p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 text-muted-foreground hover:text-amber-400 transition-all duration-200"
+          aria-label="Toggle theme"
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </button>
 
         {/* Logout */}
         <button

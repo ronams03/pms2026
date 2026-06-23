@@ -292,3 +292,36 @@ Stage Summary:
 - Login screen has rich letter-by-letter reveal on the hero headline + animated gradient branding + glowing form heading
 - System-wide font effects: sidebar branding shimmers, topbar titles sweep, page headings glow, dashboard stats highlights glow amber/emerald
 - All effects use CSS animations (GPU-accelerated) — no performance impact
+
+---
+Task ID: 10
+Agent: main
+Task: Add dark/light mode toggle
+
+Work Log:
+- Created ThemeProvider + useTheme hook: manages dark/light state, persists to localStorage (pms-theme key), applies .dark/.light class to <html>
+- Used lazy useState initializer to read stored theme on first render (avoids lint error + flash)
+- Updated Providers to wrap ThemeProvider around AuthProvider
+- Updated layout.tsx: removed hardcoded className="dark" on <html>, added inline pre-hydration script that reads localStorage and sets the theme class BEFORE React mounts (prevents flash of wrong theme)
+- Added theme toggle button to Topbar (Sun icon in dark mode → Moon icon in light mode), placed next to the logout button; hover state turns amber
+- Added comprehensive light-mode CSS overrides in globals.css:
+  - Remapped hardcoded white/X opacity utilities (bg-white/5, border-white/10, divide-white/5, etc.) to dark tints in light mode
+  - Glass/glass-strong panels use white-on-transparent gradients in light mode
+  - bg-cinematic softened with lighter amber/emerald radial gradients
+  - film-grain opacity reduced to near-invisible in light
+  - text-glow effects softened (text-glow-soft disabled entirely in light)
+  - Gradient button text color overridden per-gradient for proper contrast (dark text on amber, white on emerald/violet/rose)
+- Verified with Agent Browser:
+  - Default loads in dark mode ✅
+  - Click Sun toggle → switches to light mode instantly (html class = "light") ✅
+  - Navigated Dashboard, Projects, Tasks, Team in light mode — all render correctly ✅
+  - Hard reload → theme persists (stayed light via localStorage) ✅
+  - Toggle back to dark → works instantly ✅
+  - No console/runtime errors
+- Lint: passed clean
+
+Stage Summary:
+- Full dark/light theme toggle with a Sun/Moon button in the topbar
+- Theme persists across reloads via localStorage + pre-hydration script (no flash)
+- Light mode properly themed: glass panels, borders, text colors, gradients all adapt
+- Dark mode remains the cinematic default; light mode is a clean bright studio look
