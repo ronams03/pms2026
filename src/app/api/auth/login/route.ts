@@ -4,14 +4,14 @@ import { verifyCredentials, createSession } from '@/lib/auth-server'
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { email, password } = body
+    const { email, password, rememberMe } = body
 
     if (!email || !password) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 })
     }
 
     const user = await verifyCredentials(email, password)
-    await createSession(user)
+    await createSession(user, rememberMe !== false)
 
     return NextResponse.json({
       success: true,

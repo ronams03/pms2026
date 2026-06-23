@@ -325,3 +325,34 @@ Stage Summary:
 - Theme persists across reloads via localStorage + pre-hydration script (no flash)
 - Light mode properly themed: glass panels, borders, text colors, gradients all adapt
 - Dark mode remains the cinematic default; light mode is a clean bright studio look
+
+---
+Task ID: 11
+Agent: main
+Task: Add "Remember me" checkbox to login/register
+
+Work Log:
+- Updated createSession in auth-server.ts to accept a rememberMe boolean:
+  - rememberMe=true → 30-day persistent cookie (maxAge set)
+  - rememberMe=false → session-only cookie (no maxAge, cleared when browser closes) + 8h JWT expiry
+- Updated /api/auth/login and /api/auth/register routes to read rememberMe from body and pass to createSession
+- Updated useAuth hook: login() and register() now accept a rememberMe param (default true) and include it in the API request body
+- Added a cinematic "Remember me on this device" checkbox to the auth screen form (between password field and submit button):
+  - Custom-styled 16x16 checkbox with amber gradient when checked + checkmark SVG
+  - Unchecked state: subtle bordered box
+  - Clickable label + checkbox + hidden native input for accessibility
+  - Defaults to checked
+  - Applies to both login AND register modes
+- Verified with Agent Browser:
+  - Checkbox shows on login screen, checked by default ✅
+  - Clicking toggles checked/unchecked state ✅
+  - Register with remember me UNCHECKED → session-only cookie, dashboard loads ✅
+  - Login with remember me CHECKED → 30-day cookie, dashboard loads ✅
+  - No console/server errors
+- Lint: passed clean
+
+Stage Summary:
+- "Remember me on this device" checkbox added to the auth form (both login + register)
+- Checked (default) → stays logged in for 30 days
+- Unchecked → session-only, logs out when browser closes
+- Cinematic amber-gradient checkbox styling matches the app theme

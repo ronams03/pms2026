@@ -7,7 +7,8 @@ const SECRET = new TextEncoder().encode(
   process.env.NEXTAUTH_SECRET || 'cinematic-pms-secret-key-2025-very-long-and-secure'
 )
 const COOKIE_NAME = 'pms_session'
-const MAX_AGE = 30 * 24 * 60 * 60 // 30 days in seconds
+const MAX_AGE = 30 * 24 * 60 * 60 // 30 days in seconds (remember me)
+const SESSION_AGE = 8 * 60 * 60 // 8 hours in seconds (don't remember)
 
 export interface SessionUser {
   id: string
@@ -16,8 +17,13 @@ export interface SessionUser {
   avatar: string
 }
 
-/** Create a signed JWT for a user and set it as an httpOnly cookie */
-export async function createSession(user: SessionUser) {
+/**
+ * Create a signed JWT for a user and set it as an httpOnly cookie.
+ * When rememberMe is true, the cookie persists for 30 days.
+ * When false, it's a session cookie (cleared when browser closes) with an 8h JWT expiry.
+ */
+export async function createSession(user: SessionUser, rememberMe = true) {
+  const expiresIn = rememberMe ? MAX_AGE : SESSION_AGE
   const token = await new SignJWT({
     id: user.id,
     email: user.email,
@@ -26,7 +32,7 @@ export async function createSession(user: SessionUser) {
   })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime(`${MAX_AGE}s`)
+    .setExpirationTime(`${expiresIn}s`)
     .sign(SECRET)
 
   const cookieStore = await cookies()
@@ -35,7 +41,8 @@ export async function createSession(user: SessionUser) {
     secure: false,
     sameSite: 'lax',
     path: '/',
-    maxAge: MAX_AGE,
+    // When rememberMe is false, omit maxAge so the cookie becomes session-only
+    ...(rememberMe ? { maxAge: MAX_AGE } : {}),
   })
 }
 

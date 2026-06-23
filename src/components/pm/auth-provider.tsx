@@ -42,11 +42,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refresh()
   }, [refresh])
 
-  const login = useCallback(async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string, rememberMe = true) => {
     const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, rememberMe }),
     })
     const data = await res.json()
     if (!res.ok) {
@@ -55,11 +55,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(data.user)
   }, [])
 
-  const register = useCallback(async (name: string, email: string, password: string) => {
+  const register = useCallback(async (name: string, email: string, password: string, rememberMe = true) => {
     const res = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ name, email, password, rememberMe }),
     })
     const data = await res.json()
     if (!res.ok) {

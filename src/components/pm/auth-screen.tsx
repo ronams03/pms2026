@@ -18,6 +18,7 @@ export function AuthScreen() {
   const [mode, setMode] = useState<Mode>('login')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [rememberMe, setRememberMe] = useState(true)
   const [form, setForm] = useState({ name: '', email: '', password: '' })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,10 +35,10 @@ export function AuthScreen() {
     setLoading(true)
     try {
       if (mode === 'register') {
-        await register(form.name, form.email, form.password)
+        await register(form.name, form.email, form.password, rememberMe)
         toast.success('Account created!', { description: 'Welcome to Project Management System.' })
       } else {
-        await login(form.email, form.password)
+        await login(form.email, form.password, rememberMe)
         toast.success('Welcome back!', { description: 'Loading your workspace…' })
       }
       // The AuthProvider state update triggers AppShell to re-render → dashboard shows.
@@ -254,6 +255,42 @@ export function AuthScreen() {
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
+                  </div>
+
+                  {/* Remember me */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setRememberMe(!rememberMe)}
+                      className={cn(
+                        'relative h-4 w-4 rounded border transition-all duration-200 flex items-center justify-center shrink-0',
+                        rememberMe
+                          ? 'bg-gradient-to-br from-amber-400 to-orange-600 border-amber-500/50 shadow-3d-amber'
+                          : 'bg-white/5 border-white/20 hover:border-white/40',
+                      )}
+                      aria-label="Remember me"
+                      aria-pressed={rememberMe}
+                    >
+                      {rememberMe && (
+                        <svg viewBox="0 0 24 24" fill="none" className="h-3 w-3 text-background" strokeWidth={3} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      )}
+                    </button>
+                    <label
+                      htmlFor="remember-me"
+                      className="text-xs text-muted-foreground cursor-pointer select-none"
+                      onClick={() => setRememberMe(!rememberMe)}
+                    >
+                      Remember me on this device
+                    </label>
+                    <input
+                      id="remember-me"
+                      type="checkbox"
+                      className="sr-only"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                    />
                   </div>
 
                   <Button
