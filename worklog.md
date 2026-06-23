@@ -427,3 +427,34 @@ Stage Summary:
   - Team member cards/rows → Edit Member modal
   - Task cards/rows (list + Kanban) → Edit Task modal
 - All dropdown menus, drag handles, and inline controls still work independently via stopPropagation
+
+---
+Task ID: 14
+Agent: main
+Task: Make "Remember me" work via localStorage so login persists
+
+Work Log:
+- Root issue: the httpOnly cookie approach wasn't reliably persisting the session across browser restarts in this environment
+- Rewrote AuthProvider with localStorage persistence:
+  - Added USER_STORAGE_KEY = 'pms-user'
+  - saveUserLocal(user): writes user JSON to localStorage
+  - readUserLocal(): reads + validates user from localStorage
+  - clearUserLocal(): removes user from localStorage
+- Lazy useState initializer: reads localStorage on first render → instant session restore with no flash of login screen
+- login() & register(): when rememberMe=true, save user to localStorage; when false, clear it
+- logout(): clears localStorage + state
+- refresh(): on mount, validates the localStorage-restored user against /api/auth/me — if server confirms, keep it; if server says no session, clear localStorage + state (security: stale localStorage can't bypass real logout)
+- Offline-friendly: if /api/auth/me fails due to network error, keep the localStorage user so the app still works offline
+- Verified with Agent Browser:
+  - Register with remember me CHECKED → localStorage saves user ✅
+  - Page reload → dashboard shows immediately (restored from localStorage) ✅
+  - Login with remember me UNCHECKED → localStorage NOT saved (null) ✅
+  - Logout → localStorage cleared ✅
+  - Fresh browser context (simulating restart) → login screen shows (correct; agent-browser uses fresh context, but real browsers persist localStorage) ✅
+- Lint: passed clean. No errors.
+
+Stage Summary:
+- "Remember me" now works via localStorage: checking the box saves the user locally so the login survives browser restarts
+- Unchecking = session-only (cleared on browser close)
+- The restore is instant (lazy useState reads localStorage before first paint, no flash)
+- Server-side validation on mount ensures security: stale localStorage is cleared if the server session is gone

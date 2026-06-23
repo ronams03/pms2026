@@ -6,16 +6,53 @@ import type { SessionUser } from '@/lib/auth-server'
 interface AuthContextValue {
   user: SessionUser | null
   loading: boolean
-  login: (email: string, password: string) => Promise<void>
-  register: (name: string, email: string, password: string) => Promise<void>
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<void>
+  register: (name: string, email: string, password: string, rememberMe?: boolean) => Promise<void>
   logout: () => Promise<void>
   refresh: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
+const USER_STORAGE_KEY = 'pms-user'
+
+/** Save user to localStorage (only when remember me is checked) */
+function saveUserLocal(user: SessionUser) {
+  try {
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user))
+  } catch {
+    // ignore
+  }
+}
+
+/** Read saved user from localStorage (returns null if not found/invalid) */
+function readUserLocal(): SessionUser | null {
+  try {
+    const raw = localStorage.getItem(USER_STORAGE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    if (parsed && parsed.id && parsed.email) return parsed as SessionUser
+    return null
+  } catch {
+    return null
+  }
+}
+
+/** Clear saved user from localStorage */
+function clearUserLocal() {
+  try {
+    localStorage.removeItem(USER_STORAGE_KEY)
+  } catch {
+    // ignore
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<SessionUser | null>(null)
+  // Lazy init: restore from localStorage immediately (instant login, no flash)
+  const [user, setUser] = useState<SessionUser | null>(() => {
+    if (typeof window === 'undefined') return null
+    return readUserLocal()
+  })
   const [loading, setLoading] = useState(true)
   const initialized = useRef(false)
 
@@ -24,18 +61,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const res = await fetch('/api/auth/me', { cache: 'no-store' })
       if (res.ok) {
         const data = await res.json()
-        setUser(data.user || null)
+        if (data.user) {
+          setUser(data.user)
+          // Keep localStorage in sync (user might have been restored from there)
+          saveUserLocal(data.user)
+        } else {
+          // Server says no session — clear local + state
+          clearUserLocal()
+          setUser(null)
+        }
       } else {
+        clearUserLocal()
         setUser(null)
       }
     } catch {
-      setUser(null)
+      // Network error: keep localStorage user if present (offline-friendly)
+      // but mark loading false so UI can proceed
+      if (!readUserLocal()) setUser(null)
     } finally {
       setLoading(false)
     }
   }, [])
 
-  // Check session on mount
+  // On mount: if we restored a user from localStorage, validate it with the server.
+  // If no localStorage user, just check the cookie-based session.
   useEffect(() => {
     if (initialized.current) return
     initialized.current = true
@@ -53,6 +102,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error(data.error || 'Login failed')
     }
     setUser(data.user)
+    // Persist to localStorage so the login survives browser restarts
+    if (rememberMe) {
+      saveUserLocal(data.user)
+    } else {
+      clearUserLocal()
+    }
   }, [])
 
   const register = useCallback(async (name: string, email: string, password: string, rememberMe = true) => {
@@ -66,10 +121,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error(data.error || 'Registration failed')
     }
     setUser(data.user)
+    if (rememberMe) {
+      saveUserLocal(data.user)
+    } else {
+      clearUserLocal()
+    }
   }, [])
 
   const logout = useCallback(async () => {
     await fetch('/api/auth/logout', { method: 'POST' })
+    clearUserLocal()
     setUser(null)
   }, [])
 
