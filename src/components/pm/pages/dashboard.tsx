@@ -114,12 +114,12 @@ export function DashboardPage() {
             <Badge className="mb-3 bg-amber-500/10 text-amber-400 border-amber-500/20">
               <Sparkles className="h-3 w-3 mr-1" /> Welcome back
             </Badge>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-glow-soft fade-in-up-2s">
               Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, Alex
             </h1>
-            <p className="text-muted-foreground mt-1 text-sm md:text-base">
-              You have <span className="text-amber-400 font-semibold">{s.tasks} tasks</span> in flight across{' '}
-              <span className="text-emerald-400 font-semibold">{s.activeProjects} active projects</span>.
+            <p className="text-muted-foreground mt-1 text-sm md:text-base stagger-fade" style={{ animationDelay: '400ms' }}>
+              You have <span className="text-amber-400 font-semibold text-glow-amber">{s.tasks} tasks</span> in flight across{' '}
+              <span className="text-emerald-400 font-semibold text-glow-emerald">{s.activeProjects} active projects</span>.
             </p>
           </div>
           <div className="flex gap-2">

@@ -310,4 +310,116 @@
   .pulse-glow {
     animation: pulse-glow 2s infinite;
   }
+
+  /* ============ CINEMATIC TEXT / LETTER EFFECTS ============ */
+
+  /* Animated gradient text — shifts hue slowly */
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .text-gradient-animated {
+    background: linear-gradient(90deg, oklch(0.85 0.16 70), oklch(0.82 0.18 50), oklch(0.78 0.20 30), oklch(0.82 0.18 50), oklch(0.85 0.16 70));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-shift 4s ease-in-out infinite;
+  }
+
+  /* Letter-by-letter reveal — fade + rise each character */
+  @keyframes letter-reveal {
+    0% { opacity: 0; transform: translateY(0.4em) rotateX(40deg); filter: blur(6px); }
+    100% { opacity: 1; transform: translateY(0) rotateX(0); filter: blur(0); }
+  }
+  .letter-reveal {
+    display: inline-block;
+    animation: letter-reveal 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  /* Word stagger — children fade in with delay */
+  @keyframes word-rise {
+    0% { opacity: 0; transform: translateY(0.6em); filter: blur(4px); }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+  .word-rise {
+    display: inline-block;
+    animation: word-rise 1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  /* Cinematic glow text — soft amber halo */
+  .text-glow-amber {
+    text-shadow:
+      0 0 12px color-mix(in oklch, var(--primary) 45%, transparent),
+      0 0 32px color-mix(in oklch, var(--primary) 25%, transparent);
+  }
+
+  /* Soft white glow for headings */
+  .text-glow-soft {
+    text-shadow:
+      0 0 16px rgba(255, 255, 255, 0.12),
+      0 0 40px rgba(255, 255, 255, 0.06);
+  }
+
+  /* Emerald glow */
+  .text-glow-emerald {
+    text-shadow:
+      0 0 12px oklch(0.72 0.17 160 / 45%),
+      0 0 32px oklch(0.72 0.17 160 / 22%);
+  }
+
+  /* Breathing glow — pulses gently */
+  @keyframes breathe-glow {
+    0%, 100% { text-shadow: 0 0 12px color-mix(in oklch, var(--primary) 30%, transparent), 0 0 28px color-mix(in oklch, var(--primary) 15%, transparent); }
+    50% { text-shadow: 0 0 20px color-mix(in oklch, var(--primary) 55%, transparent), 0 0 48px color-mix(in oklch, var(--primary) 30%, transparent); }
+  }
+  .text-breathe {
+    animation: breathe-glow 3.5s ease-in-out infinite;
+  }
+
+  /* Letter spacing expansion on load */
+  @keyframes tracking-reveal {
+    0% { opacity: 0; letter-spacing: 0.6em; filter: blur(8px); }
+    100% { opacity: 1; letter-spacing: 0.2em; filter: blur(0); }
+  }
+  .tracking-reveal {
+    animation: tracking-reveal 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  /* Slow shimmer sweep across text */
+  @keyframes text-sweep {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  .text-sweep {
+    background: linear-gradient(
+      100deg,
+      var(--foreground) 30%,
+      color-mix(in oklch, var(--primary) 80%, white) 50%,
+      var(--foreground) 70%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: text-sweep 5s linear infinite;
+  }
+
+  /* Fade-in-up for whole blocks (2s) */
+  @keyframes fade-in-up-2s {
+    0% { opacity: 0; transform: translateY(16px); filter: blur(4px); }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+  .fade-in-up-2s {
+    animation: fade-in-up-2s 2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  /* Staggered fade-in helper — used with inline style animation-delay */
+  @keyframes stagger-fade {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .stagger-fade {
+    animation: stagger-fade 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
 }

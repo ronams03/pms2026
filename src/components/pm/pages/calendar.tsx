@@ -121,7 +121,7 @@ export function CalendarPage() {
   const selectedDayEvents = selectedDate ? eventsByDay.get(selectedDate.toDateString()) || [] : []
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-6 pb-16">
+    <div className="p-4 md:p-6 lg:p-8 space-y-6 pb-16 fade-in-up-2s">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center gap-3 justify-between">
         <div className="flex items-center gap-3">
@@ -129,7 +129,7 @@ export function CalendarPage() {
             <CalendarDays className="h-5 w-5 text-background" strokeWidth={2.3} />
           </div>
           <div>
-            <h2 className="font-semibold leading-tight">
+            <h2 className="font-semibold leading-tight text-glow-soft">
               {MONTHS[current.getMonth()]} {current.getFullYear()}
             </h2>
             <p className="text-xs text-muted-foreground">{events.length} events this month</p>

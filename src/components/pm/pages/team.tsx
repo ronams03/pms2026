@@ -105,7 +105,7 @@ export function TeamPage() {
   }
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-6 pb-16">
+    <div className="p-4 md:p-6 lg:p-8 space-y-6 pb-16 fade-in-up-2s">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center gap-3 justify-between">
         <div className="flex items-center gap-3">
@@ -113,7 +113,7 @@ export function TeamPage() {
             <Users className="h-5 w-5 text-background" strokeWidth={2.3} />
           </div>
           <div>
-            <h2 className="font-semibold leading-tight">Team Members</h2>
+            <h2 className="font-semibold leading-tight text-glow-soft">Team Members</h2>
             <p className="text-xs text-muted-foreground">{members.length} members across {departments.length} departments</p>
           </div>
         </div>

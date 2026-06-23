@@ -251,3 +251,44 @@ Stage Summary:
 - All Sparkles icon logos replaced with the generated project-management logo image
 - Logo appears on: sidebar, auth screen (desktop + mobile), loading screen, browser tab favicon
 - Consistent amber/orange branding maintained across the cinematic theme
+
+---
+Task ID: 9
+Agent: main
+Task: Add 2s fade-in page transitions + cinematic letter/font effects across the system
+
+Work Log:
+- Updated page transition wrapper in AppShell: duration-500 → duration-[2000ms] with slide-in-from-bottom-4 + ease-out (2-second fade + rise on every page switch)
+- Added 8 cinematic text/letter effect utilities to globals.css:
+  1. text-gradient-animated — shifting amber gradient hue (4s loop)
+  2. letter-reveal — per-character fade + rise + rotateX + blur clear
+  3. word-rise — per-word staggered fade + blur clear
+  4. text-glow-amber — soft amber text halo
+  5. text-glow-soft — subtle white glow for headings
+  6. text-glow-emerald — emerald glow
+  7. text-breathe — pulsing breathing glow (3.5s loop)
+  8. tracking-reveal — letter-spacing expansion from 0.6em→0.2em with blur clear
+  9. text-sweep — slow shimmer sweep across text (5s loop)
+  10. fade-in-up-2s — 2s fade + rise + blur clear for blocks
+  11. stagger-fade — 0.9s fade+rise for staggered children
+- Created AnimatedText component: renders text with per-letter or per-word staggered reveal (configurable delay + stagger)
+- Applied effects to LOGIN/AUTH screen:
+  - Branding "PROJECT MANAGEMENT" → text-gradient-animated, "SYSTEM" → tracking-reveal
+  - Hero headline "Where cinematic design meets project mastery" → letter-by-letter AnimatedText + text-glow-soft + text-glow-amber on "project mastery"
+  - Hero paragraph → fade-in-up-2s with 700ms delay
+  - Form heading "Welcome back"/"Create your account" → text-gradient-animated + text-glow-amber + AnimatedText letter reveal (re-animates on mode switch via key)
+  - Form subtitle → stagger-fade with 500ms delay
+- Applied effects across the SYSTEM:
+  - Sidebar branding → text-gradient-animated + tracking-reveal
+  - Topbar page titles → text-sweep (shimmer) + fade-in-up-2s; subtitles → stagger-fade
+  - Dashboard hero greeting → text-glow-soft + fade-in-up-2s; stats highlights → text-glow-amber/emerald
+  - Page headings (Tasks, Team Members, Calendar month, Settings) → text-glow-soft
+  - All 6 page root containers → fade-in-up-2s (2s fade-in on every page)
+- Verified with Agent Browser: navigated Dashboard→Projects→Tasks→Team, each page fades in over 2s; login screen shows letter-by-letter hero + animated gradient branding
+- Lint: passed clean. No console/server errors.
+
+Stage Summary:
+- Every page now fades in over 2 seconds when navigated to (and vice versa)
+- Login screen has rich letter-by-letter reveal on the hero headline + animated gradient branding + glowing form heading
+- System-wide font effects: sidebar branding shimmers, topbar titles sweep, page headings glow, dashboard stats highlights glow amber/emerald
+- All effects use CSS animations (GPU-accelerated) — no performance impact

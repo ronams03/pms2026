@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/components/pm/auth-provider'
+import { AnimatedText } from '@/components/pm/animated-text'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -82,16 +83,20 @@ export function AuthScreen() {
               </div>
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-gradient-amber leading-tight">PROJECT MANAGEMENT</h1>
-              <p className="text-xs text-muted-foreground uppercase tracking-[0.3em]">SYSTEM</p>
+              <h1 className="text-2xl font-bold tracking-tight text-gradient-animated leading-tight">PROJECT MANAGEMENT</h1>
+              <p className="text-xs text-muted-foreground uppercase tracking-reveal">SYSTEM</p>
             </div>
           </div>
 
           <div>
-            <h2 className="text-3xl xl:text-4xl font-bold tracking-tight leading-tight mb-3">
-              Where cinematic design<br />meets <span className="text-gradient-amber">project mastery</span>.
+            <h2 className="text-3xl xl:text-4xl font-bold tracking-tight leading-tight mb-3 text-glow-soft">
+              <AnimatedText text="Where cinematic design" as="span" className="block" delay={200} stagger={28} />
+              <span className="block">
+                meets{' '}
+                <span className="text-gradient-animated text-glow-amber">project mastery</span>.
+              </span>
             </h2>
-            <p className="text-muted-foreground leading-relaxed max-w-md">
+            <p className="text-muted-foreground leading-relaxed max-w-md fade-in-up-2s" style={{ animationDelay: '700ms' }}>
               Plan projects, run Kanban boards, and collaborate with your team — all in a beautifully crafted, 3D-realistic workspace.
             </p>
           </div>
@@ -176,10 +181,16 @@ export function AuthScreen() {
                   className="space-y-4"
                 >
                   <div className="text-center mb-2">
-                    <h2 className="text-xl font-bold tracking-tight">
-                      {mode === 'login' ? 'Welcome back' : 'Create your account'}
+                    <h2 className="text-xl font-bold tracking-tight text-gradient-animated text-glow-amber">
+                      <AnimatedText
+                        key={mode}
+                        text={mode === 'login' ? 'Welcome back' : 'Create your account'}
+                        as="span"
+                        delay={100}
+                        stagger={35}
+                      />
                     </h2>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-xs text-muted-foreground mt-1 stagger-fade" style={{ animationDelay: '500ms' }}>
                       {mode === 'login'
                         ? 'Sign in to access your cinematic workspace'
                         : 'Start managing your projects in minutes'}

@@ -110,7 +110,7 @@ export function AppShell() {
               </div>
             </div>
           )}
-          <div key={currentPage} className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+          <div key={currentPage} className="animate-in fade-in slide-in-from-bottom-4 duration-[2000ms] ease-out">
             {currentPage === 'dashboard' && <DashboardPage />}
             {currentPage === 'projects' && <ProjectsPage />}
             {currentPage === 'tasks' && <TasksPage />}

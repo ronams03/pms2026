@@ -376,7 +376,7 @@ export function TasksPage() {
   }
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-4 pb-16">
+    <div className="p-4 md:p-6 lg:p-8 space-y-4 pb-16 fade-in-up-2s">
       {/* Filter bar */}
       <div className="flex flex-col md:flex-row md:items-center gap-3 justify-between">
         <div className="flex items-center gap-2">
@@ -384,7 +384,7 @@ export function TasksPage() {
             <KanbanSquare className="h-4 w-4 text-background" strokeWidth={2.3} />
           </div>
           <div>
-            <h2 className="font-semibold leading-tight">Tasks</h2>
+            <h2 className="font-semibold leading-tight text-glow-soft">Tasks</h2>
             <p className="text-xs text-muted-foreground">{filtered.length} tasks · {view === 'board' ? 'drag to move' : 'list view'}</p>
           </div>
         </div>

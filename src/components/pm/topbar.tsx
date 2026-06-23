@@ -52,8 +52,8 @@ export function Topbar() {
         </button>
 
         <div className="hidden md:block min-w-0">
-          <h2 className="text-lg font-bold tracking-tight truncate">{info.title}</h2>
-          <p className="text-xs text-muted-foreground truncate">{info.subtitle}</p>
+          <h2 key={info.title} className="text-lg font-bold tracking-tight truncate text-sweep fade-in-up-2s">{info.title}</h2>
+          <p key={info.subtitle} className="text-xs text-muted-foreground truncate stagger-fade" style={{ animationDelay: '200ms' }}>{info.subtitle}</p>
         </div>
 
         {/* Search */}

@@ -121,7 +121,7 @@ export function ProjectsPage() {
   }
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-6 pb-16">
+    <div className="p-4 md:p-6 lg:p-8 space-y-6 pb-16 fade-in-up-2s">
       {/* Header actions */}
       <div className="flex flex-col md:flex-row md:items-center gap-3 justify-between">
         <div className="flex-1 max-w-md relative">

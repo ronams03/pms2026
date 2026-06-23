@@ -84,14 +84,14 @@ export function SettingsPage() {
   const accentColors = ['amber', 'emerald', 'rose', 'violet', 'cyan'] as const
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-6 pb-16 max-w-5xl">
+    <div className="p-4 md:p-6 lg:p-8 space-y-6 pb-16 max-w-5xl fade-in-up-2s">
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-slate-500 to-slate-700 flex items-center justify-center shadow-3d">
           <SettingsIcon className="h-5 w-5 text-background" strokeWidth={2.3} />
         </div>
         <div>
-          <h2 className="font-semibold leading-tight">Settings</h2>
+          <h2 className="font-semibold leading-tight text-glow-soft">Settings</h2>
           <p className="text-xs text-muted-foreground">Manage your profile, preferences, and workspace</p>
         </div>
       </div>

@@ -91,8 +91,8 @@ export function Sidebar() {
               </div>
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-sm font-bold tracking-tight text-gradient-amber leading-tight">PROJECT MANAGEMENT</h1>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em]">SYSTEM</p>
+              <h1 className="text-sm font-bold tracking-tight text-gradient-animated leading-tight">PROJECT MANAGEMENT</h1>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-reveal">SYSTEM</p>
             </div>
             <button
               onClick={toggleSidebar}
